@@ -6,16 +6,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.mercadolibre.puboe.meli.R;
+public class SearchResults extends ListActivity implements SearchInterface {
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+    public static final String KEY_DATA = "key_data";
+    private Search searchObject;
 
-public class SearchResults extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +24,20 @@ public class SearchResults extends ListActivity {
 
         Intent intent = getIntent();
         handleIntent(intent);
+    }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(KEY_DATA, searchObject);
+        // TODO aca gurdar los datos (el objeto Search)
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle state) {
+        Search search = (Search) state.getSerializable(KEY_DATA);
+        onSearchSuccess(search);
+        super.onRestoreInstanceState(state);
     }
 
     public void onNewIntent(Intent intent) {
@@ -46,48 +58,15 @@ public class SearchResults extends ListActivity {
         if(query == null)
             return;
 
-        new processSearch().execute(query);
+        new SearchAsyncTask(this).execute(query);
     }
 
-    private class processSearch extends CustomAsyncTask {
-
-        private final String searchBaseUrl = "https://api.mercadolibre.com/sites/MLA/search?q=";
-        private final String searchParameters = "&limit=100";
-
-        @Override
-        protected String doInBackground(String... query) {
-            String url = searchBaseUrl + query[0] + searchParameters;
-            Log.w("doInBackgroudURL", url);
-            return super.doInBackground(url);
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            try {
-                final ListView listview = (ListView) findViewById(android.R.id.list);
-                JSONObject json = new JSONObject(result);
-                JSONArray resultsArray = json.getJSONArray("results");
-
-                if(SearchResults.this == null)
-                    return;
-
-
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(SearchResults.this, android.R.layout.simple_list_item_1);
-                //new CustomArrayAdapter(SearchResults.this, R.id.row_layout);
-
-                for(int i = 0; i < resultsArray.length(); i++) {
-                    JSONObject row = resultsArray.getJSONObject(i);
-                    //ResultRow r =  new ResultRow(row.getString("title"), row.getString("price"));
-                    Log.d("Row"+i, row.getString("title"));
-                    adapter.add(row.getString("title"));
-                    //adapter.add(r);
-                }
-                listview.setAdapter(adapter);
-            } catch (JSONException e) {
-                Log.w("onPostExecuteLogOut", e.getLocalizedMessage());
-            }
-
-        }
+    @Override
+    public void onSearchSuccess(Search response) {
+        searchObject = response;
+        SearchAdapter adapter = new SearchAdapter(this, response);
+        ListView listview = (ListView) findViewById(android.R.id.list);
+        listview.setAdapter(adapter);
     }
 
     @Override
