@@ -1,7 +1,10 @@
 package com.mercadolibre.puboe.meli;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -10,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class SearchBox extends Activity {
 
@@ -32,7 +36,7 @@ public class SearchBox extends Activity {
         OnClickListener l = new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startSearchActivity(editText.getText().toString());
+                startSearchActivity(editText.getText().toString().replaceAll(" ", "+"));
             }
         };
         b.setOnClickListener(l);
@@ -40,10 +44,19 @@ public class SearchBox extends Activity {
 
     public void startSearchActivity(String query) {
         Log.w("startSearchQuery", query);
-        Intent intent = new Intent(this, SearchResults.class);
-        intent.putExtra(KEY_QUERY, query);
-        intent.setAction(Intent.ACTION_SEARCH);
-        startActivity(intent);
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            // fetch data
+            Intent intent = new Intent(this, SearchResults.class);
+            intent.putExtra(KEY_QUERY, query);
+            intent.setAction(Intent.ACTION_SEARCH);
+            startActivity(intent);
+        } else {
+            // display error
+            Toast.makeText(SearchBox.this,"No hay conexión", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

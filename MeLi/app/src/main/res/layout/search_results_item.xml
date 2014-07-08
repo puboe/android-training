@@ -3,18 +3,19 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-<!--ImageView
-    android:id="@+id/icon"
+<ImageView
+    android:id="@+id/row_thumbnail"
     android:layout_width="80dp"
     android:layout_height="80dp"
     android:contentDescription="@string/image"
     android:paddingLeft="10dp"
-    android:paddingRight="10dp" /-->
+    android:paddingRight="10dp" />
 
 <TextView
     android:id="@+id/row_title"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_toRightOf="@+id/row_thumbnail"
     android:paddingBottom="10dp"
     android:textColor="#ff000000"
     android:textSize="16dp" />
@@ -24,6 +25,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_below="@+id/row_title"
+    android:layout_toRightOf="@+id/row_thumbnail"
     android:paddingLeft="10dp"
     android:textColor="#ff40adff"
     android:textSize="14dp" />

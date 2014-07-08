@@ -37,7 +37,7 @@ public class SearchAdapter extends BaseAdapter {
     }
 
     private class ViewHolder {
-       // ImageView imageView;
+        ImageView imageView;
         TextView txtTitle;
         TextView txtPrice;
     }
@@ -53,7 +53,7 @@ public class SearchAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.txtTitle = (TextView) view.findViewById(R.id.row_title);
             holder.txtPrice = (TextView) view.findViewById(R.id.row_price);
-            //holder.imageView = (ImageView) view.findViewById(R.id.icon);
+            holder.imageView = (ImageView) view.findViewById(R.id.row_thumbnail);
             view.setTag(holder);
         }
         else {
@@ -64,7 +64,8 @@ public class SearchAdapter extends BaseAdapter {
 
         holder.txtTitle.setText(rowItem.getTitle());
         holder.txtPrice.setText("$" + rowItem.getPrice().toString());
-        //holder.imageView.setImageResource(rowItem.getImageId());
+        PhotoManager.getInstance().startDownload(rowItem.getThumbnail(), holder.imageView);
+//        holder.imageView.setImageResource(rowItem.getImageId());
 
         return view;
     }

@@ -7,5 +7,6 @@
     <string name="search_hint">Haga su búsqueda!</string>
     <string name="title_activity_search_results">SearchResults</string>
     <string name="hello_world">Hello world!</string>
+    <string name="image">Image</string>
 
 </resources>
