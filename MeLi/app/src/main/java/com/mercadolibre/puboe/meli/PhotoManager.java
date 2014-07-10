@@ -1,6 +1,7 @@
 package com.mercadolibre.puboe.meli;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -32,7 +33,7 @@ public class PhotoManager {
      * Creates a cache of byte arrays indexed by image URLs. As new items are added to the
      * cache, the oldest items are ejected and subject to garbage collection.
      */
-//    private final LruCache<URL, byte[]> mPhotoCache;
+    private final LruCache<URL, Bitmap> mPhotoCache;
     // Sets the size of the storage that's used to cache images
     private static final int IMAGE_CACHE_SIZE = 1024 * 1024 * 4;
     // Sets the amount of time an idle thread will wait for a task before terminating
@@ -70,6 +71,14 @@ public class PhotoManager {
 //        mDecodeThreadPool = new ThreadPoolExecutor(NUMBER_OF_CORES, NUMBER_OF_CORES,
 //                KEEP_ALIVE_TIME, KEEP_ALIVE_TIME_UNIT, mDecodeWorkQueue);
 
+        mPhotoCache = new LruCache<URL, Bitmap>(IMAGE_CACHE_SIZE) {
+            @Override
+            protected int sizeOf(URL key, Bitmap bitmap) {
+                // The cache size will be measured in kilobytes rather than
+                // number of items.
+                return bitmap.getByteCount() / 1024;
+            }
+        };
 
         mHandler = new Handler(Looper.getMainLooper()) {
             /*
@@ -103,7 +112,7 @@ public class PhotoManager {
                      * ImageView.
                      */
 
-//                    if(map.get(localView) == null || map.get(localView).equals(photoTask.getUrl())) {
+                    if(photoTask.getUrl().equals(map.get(localView))) {
 //                    if (photoTask.getImageURL() == localURL)
 //                        map.remove(localView);
                         /*
@@ -135,6 +144,7 @@ public class PhotoManager {
                              */
                             case TASK_COMPLETE:
                                 localView.setImageBitmap(photoTask.getImage());
+                                mPhotoCache.put(photoTask.getUrl(), photoTask.getImage());
 //                                recycleTask(photoTask);
                                 break;
                             // The download failed, sets the background color to dark red
@@ -148,7 +158,7 @@ public class PhotoManager {
                                 // Otherwise, calls the super method
                                 super.handleMessage(inputMessage);
                         }
-//                    }
+                    }
                 }
             }
         };
@@ -299,11 +309,16 @@ public class PhotoManager {
             map.put(imageView, mUrl);
             // Initializes the task
             photoTask.initializeTask(mUrl, imageView, PhotoManager.getInstance());
+            Bitmap bm = mPhotoCache.get(mUrl);
+            if(bm == null) {
 
-            getInstance().mThreadPool.execute(photoTask);
+                // Sets the display to show that the image is queued for downloading and decoding.
+                imageView.setImageResource(R.drawable.imagequeued);
+                getInstance().mThreadPool.execute(photoTask);
+            } else {
+                imageView.setImageBitmap(bm);
+            }
 
-            // Sets the display to show that the image is queued for downloading and decoding.
-            imageView.setImageResource(R.drawable.imagequeued);
         } catch (MalformedURLException e) {
             e.printStackTrace();
             imageView.setImageResource(R.drawable.imagedownloadfailed);
@@ -322,4 +337,13 @@ public class PhotoManager {
         mPhotoTaskWorkQueue.offer(photoTask);
     }
 
+    public void addBitmapToMemoryCache(URL key, Bitmap bitmap) {
+        if (getBitmapFromMemCache(key) == null) {
+            mPhotoCache.put(key, bitmap);
+        }
+    }
+
+    public Bitmap getBitmapFromMemCache(URL key) {
+        return mPhotoCache.get(key);
+    }
 }
