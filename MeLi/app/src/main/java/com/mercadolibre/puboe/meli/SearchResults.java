@@ -6,14 +6,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.AbsListView;
 import android.widget.ListView;
 
 public class SearchResults extends ListActivity implements SearchInterface {
 
     public static final String KEY_DATA = "key_data";
     private Search searchObject;
+    private String query;
+    SearchAdapter adapter;
 
 
     @Override
@@ -30,7 +31,6 @@ public class SearchResults extends ListActivity implements SearchInterface {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(KEY_DATA, searchObject);
-        // TODO aca gurdar los datos (el objeto Search)
     }
 
     @Override
@@ -58,15 +58,32 @@ public class SearchResults extends ListActivity implements SearchInterface {
         if(query == null)
             return;
 
+        this.query = query;
         new SearchAsyncTask(this).execute(query);
+    }
+
+    private void doSearchMore(String query) {
+        if(query == null)
+            return;
+        getSearchObject().getPaging().setOffset(getSearchObject().getPaging().getOffset()+15);
+        String newQuery = query + "&offset=" + getSearchObject().getPaging().getOffset();
+        Log.w("doSearchMore", newQuery);
+        new SearchAsyncTask(this).execute(newQuery);
     }
 
     @Override
     public void onSearchSuccess(Search response) {
-        searchObject = response;
-        SearchAdapter adapter = new SearchAdapter(this, response);
-        ListView listview = (ListView) findViewById(android.R.id.list);
-        listview.setAdapter(adapter);
+        if (getSearchObject() == null) {
+            searchObject = response;
+            adapter = new SearchAdapter(this, searchObject);
+            ListView listview = (ListView) findViewById(android.R.id.list);
+            listview.setOnScrollListener(new mOnScrollListener());
+            listview.setAdapter(adapter);
+        } else {
+            searchObject.getResults().addAll(response.getResults());
+            searchObject.setPaging(response.getPaging());
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -88,4 +105,30 @@ public class SearchResults extends ListActivity implements SearchInterface {
         return super.onOptionsItemSelected(item);
     }
 
+    private class mOnScrollListener implements AbsListView.OnScrollListener {
+
+        @Override
+        public void onScrollStateChanged(AbsListView absListView, int i) {
+        }
+
+        @Override
+        public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+           if(firstVisibleItem+visibleItemCount == totalItemCount && totalItemCount > getSearchObject().getPaging().getOffset()) {
+               Log.w("onScroll", "firstVisible: " + firstVisibleItem + ", visibleCount:" + visibleItemCount + ", totalCount: " + totalItemCount);
+               doSearchMore(getQuery());
+           }
+        }
+    }
+
+    public Search getSearchObject() {
+        return searchObject;
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
+    public SearchAdapter getAdapter() {
+        return adapter;
+    }
 }

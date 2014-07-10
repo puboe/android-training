@@ -65,7 +65,6 @@ public class SearchAdapter extends BaseAdapter {
         holder.txtTitle.setText(rowItem.getTitle());
         holder.txtPrice.setText("$" + rowItem.getPrice().toString());
         PhotoManager.getInstance().startDownload(rowItem.getThumbnail(), holder.imageView);
-//        holder.imageView.setImageResource(rowItem.getImageId());
 
         return view;
     }
