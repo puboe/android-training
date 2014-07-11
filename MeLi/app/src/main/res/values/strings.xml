@@ -8,5 +8,6 @@
     <string name="title_activity_search_results">SearchResults</string>
     <string name="hello_world">Hello world!</string>
     <string name="image">Image</string>
+    <string name="title_activity_item_view">Item</string>
 
 </resources>

@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
 
@@ -98,87 +99,108 @@ public class PhotoManager {
                 // If this input view isn't null
                 if (localView != null) {
 
-                    /*
-                     * Gets the URL of the *weak reference* to the input
-                     * ImageView. The weak reference won't have changed, even if
-                     * the input ImageView has.
-                     */
-//                    URL localURL = localView.getLocation();
-
-                    /*
-                     * Compares the URL of the input ImageView to the URL of the
-                     * weak reference. Only updates the bitmap in the ImageView
-                     * if this particular Thread is supposed to be serving the
-                     * ImageView.
-                     */
-
                     if(photoTask.getUrl().equals(map.get(localView))) {
-//                    if (photoTask.getImageURL() == localURL)
-//                        map.remove(localView);
-                        /*
-                         * Chooses the action to take, based on the incoming message
-                         */
                         switch (inputMessage.what) {
 
-//                            // If the download has started, sets background color to dark green
-//                            case DOWNLOAD_STARTED:
-//                                localView.setStatusResource(R.drawable.imagedownloading);
-//                                break;
-//
-//                            /*
-//                             * If the download is complete, but the decode is waiting, sets the
-//                             * background color to golden yellow
-//                             */
-//                            case DOWNLOAD_COMPLETE:
-//                                // Sets background color to golden yellow
-//                                localView.setStatusResource(R.drawable.decodequeued);
-//                                break;
-//                            // If the decode has started, sets background color to orange
-//                            case DECODE_STARTED:
-//                                localView.setStatusResource(R.drawable.decodedecoding);
-//                                break;
-                            /*
-                             * The decoding is done, so this sets the
-                             * ImageView's bitmap to the bitmap in the
-                             * incoming message
-                             */
                             case TASK_COMPLETE:
+                                Log.w("handleMessage", "TaskComplete");
                                 localView.setImageBitmap(photoTask.getImage());
                                 mPhotoCache.put(photoTask.getUrl(), photoTask.getImage());
-//                                recycleTask(photoTask);
+                                recycleTask(photoTask);
                                 break;
-                            // The download failed, sets the background color to dark red
-                            case DOWNLOAD_FAILED:
-                                localView.setImageResource(R.drawable.imagedownloadfailed);
 
-                                // Attempts to re-use the Task object
-//                                recycleTask(photoTask);
+                            case DOWNLOAD_FAILED:
+                                Log.w("handleMessage", "DownloadFailed");
+                                localView.setImageResource(R.drawable.imagedownloadfailed);
+                                recycleTask(photoTask);
                                 break;
+
                             default:
+                                Log.w("handleMessage", "default");
                                 // Otherwise, calls the super method
                                 super.handleMessage(inputMessage);
                         }
                     }
+                } else {
+                    Log.w("handleMessage", "localView NULL");
                 }
+
             }
         };
     }
-
 
     public void onCompleteTask(PhotoTask photoTask, int state) {
         switch (state) {
 
             // The task finished downloading and decoding the image
             case TASK_COMPLETE:
+                Log.i("onCompleteTask", "taskComplete");
                 Message completeMessage = mHandler.obtainMessage(state, photoTask);
                 completeMessage.sendToTarget();
                 break;
 
             // In all other cases, pass along the message without any other action.
             default:
+                Log.i("onCompleteTask", "default");
                 mHandler.obtainMessage(state, photoTask).sendToTarget();
                 break;
         }
+    }
+
+    public PhotoTask startDownload(String url, ImageView imageView) {
+
+        /*
+         * Gets a task from the pool of tasks, returning null if the pool is empty
+         */
+        PhotoTask photoTask = (PhotoTask)getInstance().mPhotoTaskWorkQueue.poll();
+
+        // If the queue was empty, create a new task instead.
+        if (null == photoTask) {
+            photoTask = new PhotoTask();
+        }
+
+        URL mUrl = null;
+        try {
+            mUrl = new URL(url);
+            map.put(imageView, mUrl);
+            // Initializes the task
+            photoTask.initializeTask(mUrl, imageView, PhotoManager.getInstance());
+            Bitmap bm = mPhotoCache.get(mUrl);
+            if(bm == null) {
+
+                // Sets the display to show that the image is queued for downloading and decoding.
+                imageView.setImageResource(R.drawable.imagequeued);
+                getInstance().mThreadPool.execute(photoTask);
+            } else {
+                imageView.setImageBitmap(bm);
+            }
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            imageView.setImageResource(R.drawable.imagedownloadfailed);
+        }
+
+        // Returns a task object, either newly-created or one from the task pool
+        return photoTask;
+    }
+
+    void recycleTask(PhotoTask photoTask) {
+
+        // Frees up memory in the task
+        photoTask.recycle();
+
+        // Puts the task object back into the queue for re-use.
+        mPhotoTaskWorkQueue.offer(photoTask);
+    }
+
+    public void addBitmapToMemoryCache(URL key, Bitmap bitmap) {
+        if (getBitmapFromMemCache(key) == null) {
+            mPhotoCache.put(key, bitmap);
+        }
+    }
+
+    public Bitmap getBitmapFromMemCache(URL key) {
+        return mPhotoCache.get(key);
     }
 
 //    /**
@@ -290,60 +312,5 @@ public class PhotoManager {
 //    }
 
 
-    public PhotoTask startDownload(String url, ImageView imageView) {
 
-        /*
-         * Gets a task from the pool of tasks, returning null if the pool is empty
-         */
-        PhotoTask photoTask = (PhotoTask)getInstance().mPhotoTaskWorkQueue.poll();
-
-
-        // If the queue was empty, create a new task instead.
-        if (null == photoTask) {
-            photoTask = new PhotoTask();
-        }
-
-        URL mUrl = null;
-        try {
-            mUrl = new URL(url);
-            map.put(imageView, mUrl);
-            // Initializes the task
-            photoTask.initializeTask(mUrl, imageView, PhotoManager.getInstance());
-            Bitmap bm = mPhotoCache.get(mUrl);
-            if(bm == null) {
-
-                // Sets the display to show that the image is queued for downloading and decoding.
-                imageView.setImageResource(R.drawable.imagequeued);
-                getInstance().mThreadPool.execute(photoTask);
-            } else {
-                imageView.setImageBitmap(bm);
-            }
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            imageView.setImageResource(R.drawable.imagedownloadfailed);
-        }
-
-        // Returns a task object, either newly-created or one from the task pool
-        return photoTask;
-    }
-
-    void recycleTask(PhotoTask photoTask) {
-
-        // Frees up memory in the task
-        photoTask.recycle();
-
-        // Puts the task object back into the queue for re-use.
-        mPhotoTaskWorkQueue.offer(photoTask);
-    }
-
-    public void addBitmapToMemoryCache(URL key, Bitmap bitmap) {
-        if (getBitmapFromMemCache(key) == null) {
-            mPhotoCache.put(key, bitmap);
-        }
-    }
-
-    public Bitmap getBitmapFromMemCache(URL key) {
-        return mPhotoCache.get(key);
-    }
 }

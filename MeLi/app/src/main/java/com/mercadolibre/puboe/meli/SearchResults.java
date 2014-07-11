@@ -6,10 +6,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
-public class SearchResults extends ListActivity implements SearchInterface {
+public class SearchResults extends ListActivity implements SearchCallbackInterface {
 
     public static final String KEY_DATA = "key_data";
     private Search searchObject;
@@ -76,9 +78,18 @@ public class SearchResults extends ListActivity implements SearchInterface {
         if (getSearchObject() == null) {
             searchObject = response;
             adapter = new SearchAdapter(this, searchObject);
-            ListView listview = (ListView) findViewById(android.R.id.list);
+            final ListView listview = (ListView) findViewById(android.R.id.list);
             listview.setOnScrollListener(new mOnScrollListener());
             listview.setAdapter(adapter);
+            listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Item item = (Item)listview.getItemAtPosition(position);
+                    Intent intent = new Intent(SearchResults.this, ItemViewActivity.class);
+                    intent.putExtra(ItemViewActivity.KEY_ITEM, item.getId());
+                    startActivity(intent);
+                }
+            });
         } else {
             searchObject.getResults().addAll(response.getResults());
             searchObject.setPaging(response.getPaging());

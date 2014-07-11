@@ -37,9 +37,11 @@ public class SearchAdapter extends BaseAdapter {
     }
 
     private class ViewHolder {
-        ImageView imageView;
+        PhotoView photoView;
         TextView txtTitle;
+        TextView subTitle;
         TextView txtPrice;
+        TextView available;
     }
 
     @Override
@@ -53,7 +55,9 @@ public class SearchAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.txtTitle = (TextView) view.findViewById(R.id.row_title);
             holder.txtPrice = (TextView) view.findViewById(R.id.row_price);
-            holder.imageView = (ImageView) view.findViewById(R.id.row_thumbnail);
+            holder.photoView = (PhotoView) view.findViewById(R.id.row_thumbnail);
+            holder.subTitle = (TextView) view.findViewById(R.id.row_subtitle);
+            holder.available = (TextView) view.findViewById(R.id.row_available);
             view.setTag(holder);
         }
         else {
@@ -64,7 +68,19 @@ public class SearchAdapter extends BaseAdapter {
 
         holder.txtTitle.setText(rowItem.getTitle());
         holder.txtPrice.setText("$" + rowItem.getPrice().toString());
-        PhotoManager.getInstance().startDownload(rowItem.getThumbnail(), holder.imageView);
+        holder.photoView.setImageURL(rowItem.getThumbnail());
+//        PhotoManager.getInstance().startDownload(rowItem.getThumbnail(), holder.photoView);
+        if(holder.subTitle != null) {
+            if(!rowItem.getSubtitle().equals("null")) {
+                holder.subTitle.setText(rowItem.getSubtitle());
+            } else {
+                holder.subTitle.setVisibility(View.GONE);
+            }
+
+        }
+        if(holder.available != null) {
+            holder.available.setText(rowItem.getAvailableQuantity() + " disponibles");
+        }
 
         return view;
     }

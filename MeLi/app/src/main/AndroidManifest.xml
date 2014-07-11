@@ -22,13 +22,27 @@
         <activity
             android:name=".SearchResults"
             android:launchMode="singleTop"
-            android:label="@string/title_activity_search_results" >
+            android:label="@string/title_activity_search_results"
+            android:parentActivityName="com.mercadolibre.puboe.meli.SearchBox">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.mercadolibre.puboe.meli.SearchBox" />
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
 
 
         </activity>
+        <activity
+            android:name=".ItemViewActivity"
+            android:label="@string/title_activity_item_view"
+            android:parentActivityName="com.mercadolibre.puboe.meli.SearchResults">
+            <meta-data
+                android:name="android.PARENT_ACTIVITY"
+                android:value="com.mercadolibre.puboe.meli.SearchResults" />
+
+        </activity>
+
     </application>
 
 </manifest>
