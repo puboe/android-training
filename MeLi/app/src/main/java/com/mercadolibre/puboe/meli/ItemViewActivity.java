@@ -7,6 +7,9 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 /**
  * Created by puboe on 10/07/14.
  */
@@ -46,8 +49,18 @@ public class ItemViewActivity extends Activity implements ItemCallbackInterface 
     @Override
     public void onItemRequestSuccess(Item response) {
         itemObject = response;
-        ImageView imageView = (ImageView)findViewById(R.id.item_image);
-            PhotoManager.getInstance().startDownload(response.getImageUrl(), imageView);
+        PhotoView photoView = (PhotoView)findViewById(R.id.item_image);
+
+//        photoView.setImageResource(R.drawable.imagedownloading);
+        try {
+            URL mUrl = null;
+            mUrl = new URL(response.getImageUrl());
+            Log.i("ItemViewActivity", response.getImageUrl());
+            photoView.setImageURL(mUrl);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            photoView.setImageResource(R.drawable.imagedownloadfailed);
+        }
         TextView title = (TextView)findViewById(R.id.item_title);
             title.setText(response.getTitle());
         TextView price = (TextView)findViewById(R.id.item_price);

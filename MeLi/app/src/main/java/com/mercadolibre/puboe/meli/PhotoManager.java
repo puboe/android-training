@@ -52,7 +52,7 @@ public class PhotoManager {
     public static PhotoManager instance;
     private Handler mHandler;
     private static int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
-    private Map<ImageView, URL> map = new HashMap<ImageView, URL>();
+    private Map<PhotoView, URL> map = new HashMap<PhotoView, URL>();
 
 
     public static PhotoManager getInstance() {
@@ -68,9 +68,6 @@ public class PhotoManager {
 
         mThreadPool = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
                 KEEP_ALIVE_TIME, KEEP_ALIVE_TIME_UNIT, mPhotoTaskWorkQueue);
-
-//        mDecodeThreadPool = new ThreadPoolExecutor(NUMBER_OF_CORES, NUMBER_OF_CORES,
-//                KEEP_ALIVE_TIME, KEEP_ALIVE_TIME_UNIT, mDecodeWorkQueue);
 
         mPhotoCache = new LruCache<URL, Bitmap>(IMAGE_CACHE_SIZE) {
             @Override
@@ -94,16 +91,17 @@ public class PhotoManager {
 
                 // Sets an PhotoView that's a weak reference to the
                 // input ImageView
-                ImageView localView = photoTask.getImageView();
+                PhotoView localView = photoTask.getImageView();
 
                 // If this input view isn't null
                 if (localView != null) {
 
-                    if(photoTask.getUrl().equals(map.get(localView))) {
+                    if(photoTask.getUrl().equals(localView.getLocation())) {
                         switch (inputMessage.what) {
 
                             case TASK_COMPLETE:
                                 Log.w("handleMessage", "TaskComplete");
+
                                 localView.setImageBitmap(photoTask.getImage());
                                 mPhotoCache.put(photoTask.getUrl(), photoTask.getImage());
                                 recycleTask(photoTask);
@@ -116,12 +114,14 @@ public class PhotoManager {
                                 break;
 
                             default:
+                                recycleTask(photoTask);
                                 Log.w("handleMessage", "default");
                                 // Otherwise, calls the super method
                                 super.handleMessage(inputMessage);
                         }
                     }
                 } else {
+                    recycleTask(photoTask);
                     Log.w("handleMessage", "localView NULL");
                 }
 
@@ -147,41 +147,30 @@ public class PhotoManager {
         }
     }
 
-    public PhotoTask startDownload(String url, ImageView imageView) {
+    public void startDownload(URL mUrl, PhotoView imageView) {
+        Bitmap bm = mPhotoCache.get(mUrl);
 
+        if(bm == null) {
         /*
          * Gets a task from the pool of tasks, returning null if the pool is empty
          */
-        PhotoTask photoTask = (PhotoTask)getInstance().mPhotoTaskWorkQueue.poll();
+            PhotoTask photoTask = (PhotoTask)getInstance().mPhotoTaskWorkQueue.poll();
 
-        // If the queue was empty, create a new task instead.
-        if (null == photoTask) {
-            photoTask = new PhotoTask();
-        }
-
-        URL mUrl = null;
-        try {
-            mUrl = new URL(url);
-            map.put(imageView, mUrl);
-            // Initializes the task
-            photoTask.initializeTask(mUrl, imageView, PhotoManager.getInstance());
-            Bitmap bm = mPhotoCache.get(mUrl);
-            if(bm == null) {
-
-                // Sets the display to show that the image is queued for downloading and decoding.
-                imageView.setImageResource(R.drawable.imagequeued);
-                getInstance().mThreadPool.execute(photoTask);
-            } else {
-                imageView.setImageBitmap(bm);
+            // If the queue was empty, create a new task instead.
+            if (null == photoTask) {
+                photoTask = new PhotoTask();
             }
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            imageView.setImageResource(R.drawable.imagedownloadfailed);
-        }
+            // Initializes the task
+            photoTask.initializeTask(mUrl, imageView, PhotoManager.getInstance());
 
-        // Returns a task object, either newly-created or one from the task pool
-        return photoTask;
+            // Sets the display to show that the image is queued for downloading and decoding.
+            imageView.setImageResource(R.drawable.imagequeued);
+            Log.i("PhotoManager", "executing photoTask");
+            getInstance().mThreadPool.execute(photoTask);
+        } else {
+            imageView.setImageBitmap(bm);
+        }
     }
 
     void recycleTask(PhotoTask photoTask) {
@@ -190,7 +179,7 @@ public class PhotoManager {
         photoTask.recycle();
 
         // Puts the task object back into the queue for re-use.
-        mPhotoTaskWorkQueue.offer(photoTask);
+//        mPhotoTaskWorkQueue.offer(photoTask);
     }
 
     public void addBitmapToMemoryCache(URL key, Bitmap bitmap) {

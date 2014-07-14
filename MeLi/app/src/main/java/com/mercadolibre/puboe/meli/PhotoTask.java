@@ -33,19 +33,23 @@ public class PhotoTask implements Runnable {
 
     private URL url;
     private PhotoManager photoManager;
-    private WeakReference<ImageView> imageWeakRef;
+    private WeakReference<PhotoView> imageWeakRef;
     private Bitmap decodedImage;
     private byte[] imageBuffer;
 
-    public void initializeTask(URL url, ImageView imageView, PhotoManager photoManager) {
-        this.url = url;
+    public void initializeTask(URL url, PhotoView photoView, PhotoManager photoManager) {
+        this.url = photoView.getLocation();
+        Log.w("initializeTask", url.toString());
+        if(photoView == null) {
+            Log.w("initializeTask", "photoView == NULL");
+        }
         this.photoManager = photoManager;
-        this.imageWeakRef = new WeakReference<ImageView>(imageView);
+        this.imageWeakRef = new WeakReference<PhotoView>(photoView);
     }
 
     @Override
     public void run() {
-
+        Log.w("initializeTask", "Running PhotoTask runnable: " + hashCode());
         // Moves the current Thread into the background
 //        android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 
@@ -421,7 +425,7 @@ public class PhotoTask implements Runnable {
         return url;
     }
 
-    public ImageView getImageView() {
+    public PhotoView getImageView() {
         if ( null != imageWeakRef ) {
             return imageWeakRef.get();
         }
