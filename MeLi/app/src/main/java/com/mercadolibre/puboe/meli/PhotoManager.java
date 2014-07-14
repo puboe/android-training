@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -46,13 +47,14 @@ public class PhotoManager {
     // Sets the maximum threadpool size to 8
     private static final int MAXIMUM_POOL_SIZE = 8;
     // A queue of PhotoManager tasks. Tasks are handed to a ThreadPool.
-    private final BlockingQueue<Runnable> mPhotoTaskWorkQueue;
+    private final Queue<PhotoTask> mPhotoTaskWorkQueue;
+    private final BlockingQueue<Runnable> mTaskWorkQueue;
     private final ThreadPoolExecutor mThreadPool;
 
     public static PhotoManager instance;
     private Handler mHandler;
     private static int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
-    private Map<PhotoView, URL> map = new HashMap<PhotoView, URL>();
+//    private Map<PhotoView, URL> map = new HashMap<PhotoView, URL>();
 
 
     public static PhotoManager getInstance() {
@@ -64,10 +66,12 @@ public class PhotoManager {
 
     private PhotoManager() {
 
-        mPhotoTaskWorkQueue = new LinkedBlockingQueue<Runnable>();
+
+        mPhotoTaskWorkQueue = new LinkedBlockingQueue<PhotoTask>();
+        mTaskWorkQueue = new LinkedBlockingQueue<Runnable>();
 
         mThreadPool = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
-                KEEP_ALIVE_TIME, KEEP_ALIVE_TIME_UNIT, mPhotoTaskWorkQueue);
+                KEEP_ALIVE_TIME, KEEP_ALIVE_TIME_UNIT, mTaskWorkQueue);
 
         mPhotoCache = new LruCache<URL, Bitmap>(IMAGE_CACHE_SIZE) {
             @Override
@@ -167,7 +171,7 @@ public class PhotoManager {
             // Sets the display to show that the image is queued for downloading and decoding.
             imageView.setImageResource(R.drawable.imagequeued);
             Log.i("PhotoManager", "executing photoTask");
-            getInstance().mThreadPool.execute(photoTask);
+            getInstance().mThreadPool.execute(photoTask.getRunnable());
         } else {
             imageView.setImageBitmap(bm);
         }
@@ -179,7 +183,7 @@ public class PhotoManager {
         photoTask.recycle();
 
         // Puts the task object back into the queue for re-use.
-//        mPhotoTaskWorkQueue.offer(photoTask);
+        mPhotoTaskWorkQueue.offer(photoTask);
     }
 
     public void addBitmapToMemoryCache(URL key, Bitmap bitmap) {
