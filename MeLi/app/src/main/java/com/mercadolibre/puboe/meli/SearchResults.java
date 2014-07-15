@@ -1,29 +1,41 @@
 package com.mercadolibre.puboe.meli;
 
-import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
-public class SearchResults extends ListActivity implements SearchCallbackInterface {
+public class SearchResults extends ActionBarActivity implements SearchCallbackInterface,
+                                                        SearchResultsFragment.OnFragmentInteractionListener,
+                                                        ItemCallbackInterface {
 
     public static final String KEY_DATA = "key_data";
     private Search searchObject;
     private String query;
-    SearchAdapter adapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.w("SearchResults", "onCreate");
         setContentView(R.layout.activity_search_results);
+
+        if (findViewById(R.id.fragment_container) != null) {
+            if (savedInstanceState != null) {
+                Log.i("SearchResults", "savedInstanceState != NULL");
+                return;
+            }
+            SearchResultsFragment firstFragment = SearchResultsFragment.newInstance();
+//            firstFragment.setArguments(getIntent().getExtras());
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, firstFragment).commit();
+        } else {
+            Log.i("SearchResults", "fragment_container == NULL");
+        }
 
         Intent intent = getIntent();
         handleIntent(intent);
@@ -38,7 +50,7 @@ public class SearchResults extends ListActivity implements SearchCallbackInterfa
     @Override
     protected void onRestoreInstanceState(Bundle state) {
         Search search = (Search) state.getSerializable(KEY_DATA);
-        onSearchSuccess(search);
+//        onSearchSuccess(search);
         super.onRestoreInstanceState(state);
     }
 
@@ -65,35 +77,18 @@ public class SearchResults extends ListActivity implements SearchCallbackInterfa
     }
 
     private void doSearchMore(String query) {
-        if(query == null)
-            return;
-        getSearchObject().getPaging().setOffset(getSearchObject().getPaging().getOffset()+15);
-        String newQuery = query + "&offset=" + getSearchObject().getPaging().getOffset();
-        Log.w("doSearchMore", newQuery);
-        new SearchAsyncTask(this).execute(newQuery);
+
     }
 
     @Override
     public void onSearchSuccess(Search response) {
-        if (getSearchObject() == null) {
-            searchObject = response;
-            adapter = new SearchAdapter(this, searchObject);
-            final ListView listview = (ListView) findViewById(android.R.id.list);
-            listview.setOnScrollListener(new mOnScrollListener());
-            listview.setAdapter(adapter);
-            listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Item item = (Item)listview.getItemAtPosition(position);
-                    Intent intent = new Intent(SearchResults.this, ItemViewActivity.class);
-                    intent.putExtra(ItemViewActivity.KEY_ITEM, item.getId());
-                    startActivity(intent);
-                }
-            });
+        searchObject = response;
+        SearchResultsFragment searchResultsFragment =
+                (SearchResultsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if(searchResultsFragment != null) {
+            searchResultsFragment.showResults(response);
         } else {
-            searchObject.getResults().addAll(response.getResults());
-            searchObject.setPaging(response.getPaging());
-            adapter.notifyDataSetChanged();
+            Log.i("SearchResults", "searchResultsFragment == NULL");
         }
     }
 
@@ -116,19 +111,58 @@ public class SearchResults extends ListActivity implements SearchCallbackInterfa
         return super.onOptionsItemSelected(item);
     }
 
-    private class mOnScrollListener implements AbsListView.OnScrollListener {
+    @Override
+    public void onItemSelected(String id) {
+        // TODO Por ahora los muestra en otra activity
+        new ItemAsyncTask(this).execute(id);
+//        Intent intent = new Intent(SearchResults.this, ItemViewActivity.class);
+//        intent.putExtra(ItemViewActivity.KEY_ITEM, id);
+//        startActivity(intent);
+    }
 
-        @Override
-        public void onScrollStateChanged(AbsListView absListView, int i) {
-        }
+    @Override
+    public void onRequestMoreItems() {
+        if(query == null)
+            return;
+        getSearchObject().getPaging().setOffset(getSearchObject().getPaging().getOffset()+15);
+        String newQuery = query + "&offset=" + getSearchObject().getPaging().getOffset();
+        Log.w("doSearchMore", newQuery);
+        new SearchAsyncTask(this).execute(newQuery);
+    }
 
-        @Override
-        public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-           if(firstVisibleItem+visibleItemCount == totalItemCount && totalItemCount > getSearchObject().getPaging().getOffset()) {
-               Log.w("onScroll", "firstVisible: " + firstVisibleItem + ", visibleCount:" + visibleItemCount + ", totalCount: " + totalItemCount);
-               doSearchMore(getQuery());
-           }
-        }
+    @Override
+    public void onItemRequestSuccess(Item response) {
+
+//        TODO vista two-pane
+//        ItemViewFragment itemViewFragment = (ItemViewFragment)
+//                getSupportFragmentManager().findFragmentById(R.id.fragment_container2);
+//
+//        if (itemViewFragment != null) {
+//            // If article frag is available, we're in two-pane layout...
+//
+//            // Call a method in the ArticleFragment to update its content
+//            itemViewFragment.showItem(response);
+//        } else {
+            // Otherwise, we're in the one-pane layout and must swap frags...
+
+            // Create fragment and give it an argument for the selected article
+            ItemViewFragment newFragment = ItemViewFragment.newInstance(response);
+//            Bundle args = new Bundle();
+//            args.putSerializable(ItemViewFragment.KEY_ITEM, response);
+//            newFragment.setArguments(args);
+
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+            // Replace whatever is in the fragment_container view with this fragment,
+            // and add the transaction to the back stack so the user can navigate back
+            transaction.addToBackStack("hola");
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            transaction.replace(R.id.fragment_container, newFragment);
+
+
+            // Commit the transaction
+            transaction.commit();
+//        }
     }
 
     public Search getSearchObject() {
@@ -139,7 +173,4 @@ public class SearchResults extends ListActivity implements SearchCallbackInterfa
         return query;
     }
 
-    public SearchAdapter getAdapter() {
-        return adapter;
-    }
 }

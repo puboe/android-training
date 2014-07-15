@@ -11,10 +11,10 @@ import org.json.JSONObject;
 public class ItemAsyncTask extends CustomAsyncTask {
 
     private final String itemsBaseUrl = "https://api.mercadolibre.com/items/";
-    private ItemViewActivity activity;
+    private ItemCallbackInterface itemCallbackInterface;
 
-    public ItemAsyncTask(ItemViewActivity activity) {
-        this.activity = activity;
+    public ItemAsyncTask(ItemCallbackInterface itemCallbackInterface) {
+        this.itemCallbackInterface = itemCallbackInterface;
     }
 
     @Override
@@ -29,7 +29,7 @@ public class ItemAsyncTask extends CustomAsyncTask {
         try {
             JSONObject jsonItem = new JSONObject(result);
             Item response = Item.parseItem(jsonItem);
-            activity.onItemRequestSuccess(response);
+            itemCallbackInterface.onItemRequestSuccess(response);
         } catch (JSONException e) {
             Log.w("onPostExecute", e.getLocalizedMessage());
         }

@@ -15,10 +15,10 @@ public class SearchAsyncTask extends CustomAsyncTask {
 
     private final String searchBaseUrl = "https://api.mercadolibre.com/sites/MLA/search?q=";
     private final String searchParameters = "&limit=15";
-    private SearchResults activity;
+    private SearchCallbackInterface callbackInterface;
 
-    public SearchAsyncTask(SearchResults activity) {
-        this.activity = activity;
+    public SearchAsyncTask(SearchCallbackInterface callbackInterface) {
+        this.callbackInterface = callbackInterface;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class SearchAsyncTask extends CustomAsyncTask {
         try {
             JSONObject jsonSearch = new JSONObject(result);
             Search response = Search.parseSearchObject(jsonSearch);
-            activity.onSearchSuccess(response);
+            callbackInterface.onSearchSuccess(response);
         } catch (JSONException e) {
             Log.w("onPostExecute", e.getLocalizedMessage());
         }
