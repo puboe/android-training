@@ -113,7 +113,6 @@ public class SearchResults extends ActionBarActivity implements SearchCallbackIn
 
     @Override
     public void onItemSelected(String id) {
-        // TODO Por ahora los muestra en otra activity
         new ItemAsyncTask(this).execute(id);
 //        Intent intent = new Intent(SearchResults.this, ItemViewActivity.class);
 //        intent.putExtra(ItemViewActivity.KEY_ITEM, id);

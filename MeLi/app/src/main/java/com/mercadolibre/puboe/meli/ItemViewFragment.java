@@ -20,6 +20,7 @@ import java.net.URL;
 public class ItemViewFragment extends Fragment {
 
     private Item itemObject;
+    View mainView;
 
     public static final String KEY_ITEM = "key_item";
 
@@ -46,6 +47,7 @@ public class ItemViewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_item_view, container, false);
+        mainView = view;
 //        showItem(this.itemObject);
         return view;
     }
@@ -58,9 +60,8 @@ public class ItemViewFragment extends Fragment {
 
     public void showItem(Item item) {
         itemObject = item;
-        PhotoView photoView = (PhotoView)getActivity().findViewById(R.id.item_image);
+        PhotoView photoView = (PhotoView)mainView.findViewById(R.id.item_image);
 
-//        photoView.setImageResource(R.drawable.imagedownloading);
         try {
             URL mUrl = null;
             mUrl = new URL(item.getImageUrl());

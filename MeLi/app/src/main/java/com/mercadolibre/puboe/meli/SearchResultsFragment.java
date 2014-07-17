@@ -26,6 +26,7 @@ public class SearchResultsFragment extends ListFragment {
 
     private Search searchObject;
     SearchAdapter adapter;
+    ListView listview;
 
     private OnFragmentInteractionListener mListener;
 
@@ -52,18 +53,6 @@ public class SearchResultsFragment extends ListFragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        Log.i("SearchResultsFragemnt", "onViewCreated with saved state: " + (savedInstanceState != null) + " and searchObject: " + (searchObject != null));
-        if(savedInstanceState != null) {
-            showResults((Search) savedInstanceState.getSerializable(KEY_DATA));
-        } else if (searchObject != null){
-            showResults(searchObject);
-        }
-    }
-
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.i("SearchResultsFragemnt", "onCreateView");
@@ -75,12 +64,16 @@ public class SearchResultsFragment extends ListFragment {
         return mainView;
     }
 
-//    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onItemSelected(uri);
-//        }
-//    }
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Log.i("SearchResultsFragemnt", "onViewCreated with saved state: " + (savedInstanceState != null) + " and searchObject: " + (searchObject != null) + " and adapter: " + (adapter != null));
+        if(savedInstanceState != null) {
+            showResults((Search) savedInstanceState.getSerializable(KEY_DATA));
+        } else if (searchObject != null){
+            showResults();
+        }
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -108,21 +101,26 @@ public class SearchResultsFragment extends ListFragment {
         super.onSaveInstanceState(outState);
     }
 
+    public void showResults() {
+        if (listview.getAdapter() == null)
+            listview.setAdapter(adapter);
 
-    ListView listview;
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Item item = (Item)listview.getItemAtPosition(position);
+                mListener.onItemSelected(item.getId());
+            }
+        });
+    }
 
     public void showResults(Search results) {
+
         if (adapter == null && searchObject == null) {
             searchObject = results;
             adapter = new SearchAdapter(getActivity(), searchObject);
             listview.setAdapter(adapter);
-            listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Item item = (Item)listview.getItemAtPosition(position);
-                    mListener.onItemSelected(item.getId());
-                }
-            });
+
         } else {
             searchObject.getResults().addAll(results.getResults());
             searchObject.setPaging(results.getPaging());
@@ -131,6 +129,13 @@ public class SearchResultsFragment extends ListFragment {
             if (listview.getAdapter() == null)
                 listview.setAdapter(adapter);
         }
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Item item = (Item)listview.getItemAtPosition(position);
+                mListener.onItemSelected(item.getId());
+            }
+        });
     }
 
     public interface OnFragmentInteractionListener {
@@ -149,8 +154,10 @@ public class SearchResultsFragment extends ListFragment {
 
         @Override
         public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-            if (getSearchObject() == null)
+            if (getSearchObject() == null) {
+                Log.w("onScroll", "searchObject == null");
                 return;
+            }
 
             if (firstVisibleItem + visibleItemCount == totalItemCount && totalItemCount > getSearchObject().getPaging().getOffset()) {
                 Log.w("onScroll", "firstVisible: " + firstVisibleItem + ", visibleCount:" + visibleItemCount + ", totalCount: " + totalItemCount);

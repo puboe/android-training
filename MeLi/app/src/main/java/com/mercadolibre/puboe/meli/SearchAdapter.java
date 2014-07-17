@@ -56,7 +56,7 @@ public class SearchAdapter extends BaseAdapter {
                 context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         if (view == null) {
 
-            Log.i("SearchAdapter", "New view for: " + i);
+//            Log.i("SearchAdapter", "New view for: " + i);
             view = mInflater.inflate(R.layout.search_results_item, null);
             holder = new ViewHolder();
             holder.txtTitle = (TextView) view.findViewById(R.id.row_title);
@@ -67,7 +67,7 @@ public class SearchAdapter extends BaseAdapter {
             view.setTag(holder);
         }
         else {
-            Log.i("SearchAdapter", "Cached view for: " + i);
+//            Log.i("SearchAdapter", "Cached view for: " + i);
             holder = (ViewHolder) view.getTag();
         }
 
@@ -78,7 +78,7 @@ public class SearchAdapter extends BaseAdapter {
         try {
             URL mUrl = null;
             mUrl = new URL(rowItem.getThumbnail());
-            Log.i("SearchAdapter", "Set image URL for: " + rowItem.getThumbnail());
+//            Log.i("SearchAdapter", "Set image URL for: " + rowItem.getThumbnail());
             holder.photoView.setImageURL(mUrl);
         } catch (MalformedURLException e) {
             e.printStackTrace();
