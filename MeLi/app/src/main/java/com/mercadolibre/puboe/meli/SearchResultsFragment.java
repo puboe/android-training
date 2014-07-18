@@ -38,6 +38,7 @@ public class SearchResultsFragment extends ListFragment {
 //        fragment.setArguments(args);
         return fragment;
     }
+
     public SearchResultsFragment() {
         // Required empty public constructor
     }
@@ -50,6 +51,12 @@ public class SearchResultsFragment extends ListFragment {
 //            mParam1 = getArguments().getString(ARG_PARAM1);
 //            mParam2 = getArguments().getString(ARG_PARAM2);
 //        }
+        if(savedInstanceState != null) {
+            Log.i("SearchrResultsFragment", "onCreate getting searchObject from saved instance");
+            searchObject = (Search) savedInstanceState.getSerializable(KEY_DATA);
+            setListAdapter(new SearchAdapter(getActivity(), searchObject));
+        }
+
     }
 
     @Override
@@ -60,6 +67,7 @@ public class SearchResultsFragment extends ListFragment {
         View mainView = inflater.inflate(R.layout.fragment_search_results, container, false);
         listview = (ListView) mainView.findViewById(android.R.id.list);
         listview.setOnScrollListener(new mOnScrollListener());
+        adapter = (SearchAdapter) getListAdapter();
 
         return mainView;
     }
@@ -95,6 +103,17 @@ public class SearchResultsFragment extends ListFragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        // When in two-pane layout, set the listview to highlight the selected list item
+        // (We do this during onStart because at the point the listview is available.)
+        if (getFragmentManager().findFragmentById(R.id.list_fragment) != null) {
+            getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         Log.i("SearchResultsFragment", "onSaveInstanceState");
         outState.putSerializable(KEY_DATA, searchObject);
@@ -102,40 +121,41 @@ public class SearchResultsFragment extends ListFragment {
     }
 
     public void showResults() {
-        if (listview.getAdapter() == null)
-            listview.setAdapter(adapter);
+        if (getListAdapter() == null)
+            setListAdapter(adapter);
 
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Item item = (Item)listview.getItemAtPosition(position);
-                mListener.onItemSelected(item.getId());
-            }
-        });
+//        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Item item = (Item)listview.getItemAtPosition(position);
+//                mListener.onItemSelected(item.getId());
+//            }
+//        });
     }
 
     public void showResults(Search results) {
 
-        if (adapter == null && searchObject == null) {
+        if (getListAdapter() == null && searchObject == null) {
             searchObject = results;
-            adapter = new SearchAdapter(getActivity(), searchObject);
-            listview.setAdapter(adapter);
+            setListAdapter(new SearchAdapter(getActivity(), searchObject));
 
         } else {
             searchObject.getResults().addAll(results.getResults());
             searchObject.setPaging(results.getPaging());
+            adapter = (SearchAdapter) getListAdapter();
             adapter.notifyDataSetChanged();
 
-            if (listview.getAdapter() == null)
-                listview.setAdapter(adapter);
+            if (getListAdapter() == null)
+                setListAdapter(adapter);
         }
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Item item = (Item)listview.getItemAtPosition(position);
-                mListener.onItemSelected(item.getId());
-            }
-        });
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+//        super.onListItemClick(l, v, position, id);
+        Item item = (Item)listview.getItemAtPosition(position);
+        mListener.onItemSelected(item.getId());
+        getListView().setItemChecked(position, true);
     }
 
     public interface OnFragmentInteractionListener {

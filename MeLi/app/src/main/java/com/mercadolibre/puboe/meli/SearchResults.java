@@ -9,7 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class SearchResults extends ActionBarActivity implements SearchCallbackInterface,
+public class SearchResults extends FragmentActivity implements SearchCallbackInterface,
                                                         SearchResultsFragment.OnFragmentInteractionListener,
                                                         ItemCallbackInterface {
 
@@ -33,8 +33,18 @@ public class SearchResults extends ActionBarActivity implements SearchCallbackIn
 
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, firstFragment).commit();
+//        } else if(findViewById(R.id.list_fragment) != null) {
+//            if (savedInstanceState != null) {
+//                Log.i("SearchResults", "savedInstanceState != NULL");
+//                return;
+//            }
+//            SearchResultsFragment firstFragment = SearchResultsFragment.newInstance();
+////            firstFragment.setArguments(getIntent().getExtras());
+//
+//            getSupportFragmentManager().beginTransaction()
+//                     .add(R.id.list_fragment, firstFragment).commit();
         } else {
-            Log.i("SearchResults", "fragment_container == NULL");
+            Log.i("SearchResults", "fragment_container == NULL && list_fragment == NULL");
         }
 
         Intent intent = getIntent();
@@ -49,7 +59,7 @@ public class SearchResults extends ActionBarActivity implements SearchCallbackIn
 
     @Override
     protected void onRestoreInstanceState(Bundle state) {
-        Search search = (Search) state.getSerializable(KEY_DATA);
+        searchObject = (Search) state.getSerializable(KEY_DATA);
 //        onSearchSuccess(search);
         super.onRestoreInstanceState(state);
     }
@@ -76,19 +86,26 @@ public class SearchResults extends ActionBarActivity implements SearchCallbackIn
         new SearchAsyncTask(this).execute(query);
     }
 
-    private void doSearchMore(String query) {
-
-    }
-
     @Override
     public void onSearchSuccess(Search response) {
         searchObject = response;
-        SearchResultsFragment searchResultsFragment =
-                (SearchResultsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-        if(searchResultsFragment != null) {
-            searchResultsFragment.showResults(response);
+        setResultsList(response);
+    }
+
+    public void setResultsList(Search search) {
+        SearchResultsFragment searchResultsFragment = (SearchResultsFragment)
+                getSupportFragmentManager().findFragmentById(R.id.list_fragment);
+
+        if (searchResultsFragment != null) {
+            searchResultsFragment.showResults(search);
         } else {
-            Log.i("SearchResults", "searchResultsFragment == NULL");
+            searchResultsFragment =
+                    (SearchResultsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            if (searchResultsFragment != null) {
+                searchResultsFragment.showResults(search);
+            } else {
+                Log.i("SearchResults", "searchResultsFragment == NULL");
+            }
         }
     }
 
@@ -133,16 +150,15 @@ public class SearchResults extends ActionBarActivity implements SearchCallbackIn
     public void onItemRequestSuccess(Item response) {
 
 //        TODO vista two-pane
-//        ItemViewFragment itemViewFragment = (ItemViewFragment)
-//                getSupportFragmentManager().findFragmentById(R.id.fragment_container2);
+        ItemViewFragment itemViewFragment = (ItemViewFragment)
+                getSupportFragmentManager().findFragmentById(R.id.vip_fragment);
 //
-//        if (itemViewFragment != null) {
-//            // If article frag is available, we're in two-pane layout...
-//
-//            // Call a method in the ArticleFragment to update its content
-//            itemViewFragment.showItem(response);
-//        } else {
-            // Otherwise, we're in the one-pane layout and must swap frags...
+        if (itemViewFragment != null) {
+            // If article frag is available, we're in two-pane layout...
+            // Call a method in the ArticleFragment to update its content
+            itemViewFragment.showItem(response);
+        } else {
+//            Otherwise, we're in the one-pane layout and must swap frags...
 
             // Create fragment and give it an argument for the selected article
             ItemViewFragment newFragment = ItemViewFragment.newInstance(response);
@@ -158,10 +174,13 @@ public class SearchResults extends ActionBarActivity implements SearchCallbackIn
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             transaction.replace(R.id.fragment_container, newFragment);
 
-
             // Commit the transaction
             transaction.commit();
-//        }
+        }
+    }
+
+    public void setItemView(Item item) {
+
     }
 
     public Search getSearchObject() {

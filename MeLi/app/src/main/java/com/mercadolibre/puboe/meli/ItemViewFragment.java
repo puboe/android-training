@@ -19,10 +19,10 @@ import java.net.URL;
  */
 public class ItemViewFragment extends Fragment {
 
+    public static final String KEY_ITEM = "key_item";
+
     private Item itemObject;
     View mainView;
-
-    public static final String KEY_ITEM = "key_item";
 
     public static ItemViewFragment newInstance(Item item) {
         ItemViewFragment fragment = new ItemViewFragment();
@@ -35,32 +35,57 @@ public class ItemViewFragment extends Fragment {
         // Required empty public constructor
     }
 
+//    @Override
+//    public void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        if (getArguments() != null) {
+//            this.itemObject = (Item)getArguments().getSerializable(KEY_ITEM);
+//        }
+//    }
+
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            this.itemObject = (Item)getArguments().getSerializable(KEY_ITEM);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        if (savedInstanceState != null) {
+            itemObject = (Item) savedInstanceState.getSerializable(KEY_ITEM);
+        }
+        View view = inflater.inflate(R.layout.fragment_item_view, container, false);
+        mainView = view;
+
+        return view;
+    }
+
+//    @Override
+//    public void onViewCreated(View view, Bundle savedInstanceState) {
+//        super.onViewCreated(view, savedInstanceState);
+//        if(itemObject != null) {
+//            showItem(itemObject);
+//        }
+//    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        Bundle args = getArguments();
+        if (args != null) {
+            // Set article based on argument passed in
+            showItem((Item) args.getSerializable(KEY_ITEM));
+        } else if (itemObject != null) {
+            // Set article based on saved instance state defined during onCreateView
+            showItem(itemObject);
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_item_view, container, false);
-        mainView = view;
-//        showItem(this.itemObject);
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        showItem(itemObject);
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(KEY_ITEM, itemObject);
     }
 
     public void showItem(Item item) {
         itemObject = item;
-        PhotoView photoView = (PhotoView)mainView.findViewById(R.id.item_image);
+        PhotoView photoView = (PhotoView)getActivity().findViewById(R.id.item_image);
 
         try {
             URL mUrl = null;
