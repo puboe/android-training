@@ -111,23 +111,28 @@ public class ItemViewFragment extends Fragment {
 
         final ItemDAO itemDao = ItemDAOImpl.getInstance(getActivity());
 
+        final Button track = (Button) mainView.findViewById(R.id.track_button);
+        final Button untrack = (Button) mainView.findViewById(R.id.untrack_button);
+
         View.OnClickListener l = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 switch(view.getId()) {
                     case R.id.track_button:
                         itemDao.saveItem(item);
+                        track.setVisibility(View.GONE);
+                        untrack.setVisibility(View.VISIBLE);
                         break;
 
                     case R.id.untrack_button:
                         itemDao.deleteItem(item);
+                        untrack.setVisibility(View.GONE);
+                        track.setVisibility(View.VISIBLE);
                         break;
                 }
             }
         };
 
-        Button track = (Button) mainView.findViewById(R.id.track_button);
-        Button untrack = (Button) mainView.findViewById(R.id.untrack_button);
 
         track.setOnClickListener(l);
         untrack.setOnClickListener(l);
