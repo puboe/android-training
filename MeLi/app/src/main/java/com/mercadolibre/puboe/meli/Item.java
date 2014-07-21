@@ -22,13 +22,19 @@ public class Item implements Serializable {
     private Integer availableQuantity;
 
 
-    public Item(String id, String title, String subtitle, Double price, String thumbnail, Integer availableQuantity) {
+    private Item(String id, String title, String subtitle, Double price, String thumbnail, Integer availableQuantity) {
         this.id = id;
         this.title = title;
         this.subtitle = subtitle;
         this.price = price;
         this.thumbnail = thumbnail;
         this.availableQuantity = availableQuantity;
+    }
+
+    public Item(String id, String title, String subtitle, Double price, String thumbnail, Integer availableQuantity, String imageUrl, String condition) {
+        this(id, title, subtitle, price, thumbnail, availableQuantity);
+        this.imageUrl = imageUrl;
+        this.condition = condition;
     }
 
     public static Item parseItemObject(JSONObject item) throws JSONException {
@@ -42,7 +48,7 @@ public class Item implements Serializable {
         return new Item(id, title, subtitle, price,thumbnail, availableQuantity);
     }
 
-    public static Item parseItem(JSONObject jsonItem) throws JSONException {
+    public static Item parseCompleteItem(JSONObject jsonItem) throws JSONException {
         Item item = parseItemObject(jsonItem);
 
         item.setImageUrl(jsonItem.getJSONArray("pictures").getJSONObject(0).getString("url"));
@@ -113,5 +119,22 @@ public class Item implements Serializable {
 
     public void setSubtitle(String subtitle) {
         this.subtitle = subtitle;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Item item = (Item) o;
+
+        if (!id.equals(item.id)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 }

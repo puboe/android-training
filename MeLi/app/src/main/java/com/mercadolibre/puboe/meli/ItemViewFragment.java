@@ -1,12 +1,16 @@
 package com.mercadolibre.puboe.meli;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+
+import com.mercadolibre.puboe.meli.sqlite.ItemDAOImpl;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -83,7 +87,7 @@ public class ItemViewFragment extends Fragment {
         outState.putSerializable(KEY_ITEM, itemObject);
     }
 
-    public void showItem(Item item) {
+    public void showItem(final Item item) {
         itemObject = item;
         PhotoView photoView = (PhotoView)getActivity().findViewById(R.id.item_image);
 
@@ -96,14 +100,43 @@ public class ItemViewFragment extends Fragment {
             e.printStackTrace();
             photoView.setImageResource(R.drawable.imagedownloadfailed);
         }
-        TextView title = (TextView)getActivity().findViewById(R.id.item_title);
+        TextView title = (TextView)mainView.findViewById(R.id.item_title);
         title.setText(item.getTitle());
-        TextView price = (TextView)getActivity().findViewById(R.id.item_price);
+        TextView price = (TextView)mainView.findViewById(R.id.item_price);
         price.setText("Precio: $" + item.getPrice());
-        TextView condition = (TextView)getActivity().findViewById(R.id.item_condition);
+        TextView condition = (TextView)mainView.findViewById(R.id.item_condition);
         condition.setText("Articulo " + (item.getCondition().equals("new")?"nuevo":"usado"));
-        TextView available = (TextView)getActivity().findViewById(R.id.item_available_quantity);
+        TextView available = (TextView)mainView.findViewById(R.id.item_available_quantity);
         available.setText(item.getAvailableQuantity() + " diponibles");
+
+        final ItemDAO itemDao = ItemDAOImpl.getInstance(getActivity());
+
+        View.OnClickListener l = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switch(view.getId()) {
+                    case R.id.track_button:
+                        itemDao.saveItem(item);
+                        break;
+
+                    case R.id.untrack_button:
+                        itemDao.deleteItem(item);
+                        break;
+                }
+            }
+        };
+
+        Button track = (Button) mainView.findViewById(R.id.track_button);
+        Button untrack = (Button) mainView.findViewById(R.id.untrack_button);
+
+        track.setOnClickListener(l);
+        untrack.setOnClickListener(l);
+
+        if(itemDao.exists(item.getId())) {
+            untrack.setVisibility(View.VISIBLE);
+        } else {
+            track.setVisibility(View.VISIBLE);
+        }
 
     }
 

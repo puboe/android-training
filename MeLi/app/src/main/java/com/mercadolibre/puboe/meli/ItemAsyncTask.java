@@ -28,7 +28,7 @@ public class ItemAsyncTask extends CustomAsyncTask {
     protected void onPostExecute(String result) {
         try {
             JSONObject jsonItem = new JSONObject(result);
-            Item response = Item.parseItem(jsonItem);
+            Item response = Item.parseCompleteItem(jsonItem);
             itemCallbackInterface.onItemRequestSuccess(response);
         } catch (JSONException e) {
             Log.w("onPostExecute", e.getLocalizedMessage());

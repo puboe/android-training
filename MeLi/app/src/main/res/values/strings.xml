@@ -10,5 +10,7 @@
     <string name="image">Image</string>
     <string name="title_activity_item_view">Item</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="track_item">Track item</string>
+    <string name="untrack_item">Untrack item</string>
 
 </resources>
