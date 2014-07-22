@@ -15,34 +15,42 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".SearchResults"
-            android:launchMode="singleTop"
             android:label="@string/title_activity_search_results"
-            android:parentActivityName="com.mercadolibre.puboe.meli.SearchBox">
+            android:launchMode="singleTop"
+            android:parentActivityName=".SearchBox" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mercadolibre.puboe.meli.SearchBox" />
+
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
-
-
         </activity>
         <activity
             android:name=".ItemViewActivity"
             android:label="@string/title_activity_item_view"
-            android:parentActivityName="com.mercadolibre.puboe.meli.SearchResults">
+            android:parentActivityName=".SearchResults" >
             <meta-data
                 android:name="android.PARENT_ACTIVITY"
                 android:value="com.mercadolibre.puboe.meli.SearchResults" />
-
         </activity>
 
+        <service
+            android:name=".tracker.ItemTrackerService"
+            android:exported="false" />
+
+        <receiver android:name=".alarm.AlarmBroadcastReceiver" />
+
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
     </application>
 
 </manifest>

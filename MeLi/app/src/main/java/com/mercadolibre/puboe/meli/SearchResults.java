@@ -1,15 +1,14 @@
 package com.mercadolibre.puboe.meli;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBarActivity;
+import android.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class SearchResults extends FragmentActivity implements SearchCallbackInterface,
+public class SearchResults extends Activity implements SearchCallbackInterface,
                                                         SearchResultsFragment.OnFragmentInteractionListener,
                                                         ItemCallbackInterface {
 
@@ -31,7 +30,7 @@ public class SearchResults extends FragmentActivity implements SearchCallbackInt
             SearchResultsFragment firstFragment = SearchResultsFragment.newInstance();
 //            firstFragment.setArguments(getIntent().getExtras());
 
-            getSupportFragmentManager().beginTransaction()
+            getFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, firstFragment).commit();
 //        } else if(findViewById(R.id.list_fragment) != null) {
 //            if (savedInstanceState != null) {
@@ -94,13 +93,13 @@ public class SearchResults extends FragmentActivity implements SearchCallbackInt
 
     public void setResultsList(Search search) {
         SearchResultsFragment searchResultsFragment = (SearchResultsFragment)
-                getSupportFragmentManager().findFragmentById(R.id.list_fragment);
+                getFragmentManager().findFragmentById(R.id.list_fragment);
 
         if (searchResultsFragment != null) {
             searchResultsFragment.showResults(search);
         } else {
             searchResultsFragment =
-                    (SearchResultsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                    (SearchResultsFragment) getFragmentManager().findFragmentById(R.id.fragment_container);
             if (searchResultsFragment != null) {
                 searchResultsFragment.showResults(search);
             } else {
@@ -151,7 +150,7 @@ public class SearchResults extends FragmentActivity implements SearchCallbackInt
 
 //        TODO vista two-pane
         ItemViewFragment itemViewFragment = (ItemViewFragment)
-                getSupportFragmentManager().findFragmentById(R.id.vip_fragment);
+                getFragmentManager().findFragmentById(R.id.vip_fragment);
 //
         if (itemViewFragment != null) {
             // If article frag is available, we're in two-pane layout...
@@ -166,7 +165,7 @@ public class SearchResults extends FragmentActivity implements SearchCallbackInt
 //            args.putSerializable(ItemViewFragment.KEY_ITEM, response);
 //            newFragment.setArguments(args);
 
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
             // Replace whatever is in the fragment_container view with this fragment,
             // and add the transaction to the back stack so the user can navigate back
