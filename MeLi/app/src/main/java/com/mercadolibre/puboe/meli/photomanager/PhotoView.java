@@ -1,4 +1,4 @@
-package com.mercadolibre.puboe.meli;
+package com.mercadolibre.puboe.meli.photomanager;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -7,9 +7,10 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+
+import com.mercadolibre.puboe.meli.R;
 
 import java.lang.ref.WeakReference;
 import java.net.URL;

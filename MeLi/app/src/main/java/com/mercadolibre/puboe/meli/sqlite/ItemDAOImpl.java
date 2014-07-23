@@ -7,7 +7,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.mercadolibre.puboe.meli.Item;
+import com.mercadolibre.puboe.meli.model.Item;
 import com.mercadolibre.puboe.meli.ItemDAO;
 
 import java.util.ArrayList;
@@ -84,6 +84,25 @@ public class ItemDAOImpl implements ItemDAO {
         long insertId = database.insert(ItemDatabaseContract.ItemEntry.TABLE_NAME, null,
                 values);
         System.out.println("Item added with id: " + item.getId());
+        close();
+        return;
+    }
+
+    @Override
+    public void updateItem(Item item) {
+        open();
+        ContentValues values = new ContentValues();
+        values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_ITEM_ID, item.getId());
+        values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_TITLE, item.getTitle());
+        values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_SUBTITLE, item.getSubtitle());
+        values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_PRICE, item.getPrice());
+        values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_THUMBNAIL, item.getThumbnail());
+        values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_IMAGEURL, item.getImageUrl());
+        values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_CONDITION, item.getCondition());
+        values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_AVAILABLE, item.getAvailableQuantity());
+        long updateId = database.update(ItemDatabaseContract.ItemEntry.TABLE_NAME, values,
+                                        ItemDatabaseContract.ItemEntry.COLUMN_NAME_ITEM_ID + " = '" + item.getId() + "'", null);
+        System.out.println("Item updated with id: " + item.getId());
         close();
         return;
     }

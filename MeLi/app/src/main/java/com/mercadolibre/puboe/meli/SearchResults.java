@@ -8,11 +8,16 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.mercadolibre.puboe.meli.model.Item;
+import com.mercadolibre.puboe.meli.model.Search;
+
 public class SearchResults extends Activity implements SearchCallbackInterface,
                                                         SearchResultsFragment.OnFragmentInteractionListener,
                                                         ItemCallbackInterface {
 
+    public static final String ACTION_SHOW_VIP = "action_show_vip";
     public static final String KEY_DATA = "key_data";
+    public static final String KEY_VIP_ID = "key_vip_id";
     private Search searchObject;
     private String query;
 
@@ -71,8 +76,10 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getExtras().getString(SearchBox.KEY_QUERY);
-
             doSearch(query);
+        } else if(intent.getAction().equals(ACTION_SHOW_VIP)) {
+            String id = intent.getExtras().getString(KEY_VIP_ID);
+            onItemSelected(id);
         }
     }
 

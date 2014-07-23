@@ -1,4 +1,4 @@
-package com.mercadolibre.puboe.meli;
+package com.mercadolibre.puboe.meli.model;
 
 import java.io.Serializable;
 

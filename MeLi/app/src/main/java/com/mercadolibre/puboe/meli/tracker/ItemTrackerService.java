@@ -1,12 +1,19 @@
 package com.mercadolibre.puboe.meli.tracker;
 
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.mercadolibre.puboe.meli.Item;
+import com.mercadolibre.puboe.meli.SearchResults;
+import com.mercadolibre.puboe.meli.model.Item;
 import com.mercadolibre.puboe.meli.ItemDAO;
+import com.mercadolibre.puboe.meli.R;
 import com.mercadolibre.puboe.meli.sqlite.ItemDAOImpl;
 
 import org.apache.http.HttpResponse;
@@ -43,16 +50,34 @@ public class ItemTrackerService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         ItemDAO itemDAO = ItemDAOImpl.getInstance(this);
         List<Item> items = itemDAO.getAllItems();
-
+        int mId = 0;
         for(Item item: items) {
             Item requestedItem = requestItem(item.getId());
             if(requestedItem != null) {
-                System.out.println("dbItem price: $" + item.getPrice() + " , requestedItem price: $" + requestedItem.getPrice());
-                if (item.getPrice() != requestedItem.getPrice()) {
-//                TODO throw notification
-                    Toast.makeText(this, "Item: " + requestedItem.getId() + " cambió de precio.", Toast.LENGTH_LONG).show();
+                System.out.println("dbItem " + item.getId() + " price: $" + item.getPrice() + " , requestedItem " + requestedItem.getId() + " price: $" + requestedItem.getPrice());
+                if (!item.getPrice().equals(requestedItem.getPrice())) {
+                    Log.i("ItemTrackerService", "Item " + item.getId() + " cambio de precio");
+                    NotificationCompat.Builder mBuilder =
+                            new NotificationCompat.Builder(this)
+                                    .setSmallIcon(R.drawable.ic_launcher)
+                                    .setContentTitle("Item: " + item.getId())
+                                    .setContentText("Cambio su precio de $" + item.getPrice() + " a $" + requestedItem.getPrice());
+
+                    Intent resultIntent = new Intent(this, SearchResults.class);
+                    resultIntent.setAction(SearchResults.ACTION_SHOW_VIP);
+                    resultIntent.putExtra(SearchResults.KEY_VIP_ID, item.getId());
+
+                    TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+                    stackBuilder.addParentStack(SearchResults.class);
+                    stackBuilder.addNextIntent(resultIntent);
+                    PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+                    mBuilder.setContentIntent(resultPendingIntent);
+                    NotificationManager mNotificationManager =
+                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    // mId allows you to update the notification later on.
+                    mNotificationManager.notify(mId++, mBuilder.build());
+                    itemDAO.updateItem(requestedItem);
                 }
-//              TODO chequear si la publicacion está por terminar o ya terminó
             } else {
                 Log.e(ItemTrackerService.class.getSimpleName(), "requestedItem == null, pero debería ser: " + item.getId());
             }

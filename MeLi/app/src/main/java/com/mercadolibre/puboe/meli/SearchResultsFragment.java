@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
+import com.mercadolibre.puboe.meli.model.Item;
+import com.mercadolibre.puboe.meli.model.Search;
+
 
 /**
  * Activities that contain this fragment must implement the

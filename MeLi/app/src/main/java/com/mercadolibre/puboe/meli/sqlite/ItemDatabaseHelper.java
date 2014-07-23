@@ -11,7 +11,7 @@ import android.util.Log;
 public class ItemDatabaseHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "Item.db";
 
     private static final String TEXT_TYPE = " TEXT";
@@ -22,7 +22,7 @@ public class ItemDatabaseHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_TABLE =
             "CREATE TABLE " + ItemDatabaseContract.ItemEntry.TABLE_NAME + " (" +
                     ItemDatabaseContract.ItemEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    ItemDatabaseContract.ItemEntry.COLUMN_NAME_ITEM_ID + TEXT_TYPE + COMMA_SEP +
+                    ItemDatabaseContract.ItemEntry.COLUMN_NAME_ITEM_ID + TEXT_TYPE + "NOT NULL UNIQUE" + COMMA_SEP +
                     ItemDatabaseContract.ItemEntry.COLUMN_NAME_TITLE + TEXT_TYPE + COMMA_SEP +
                     ItemDatabaseContract.ItemEntry.COLUMN_NAME_SUBTITLE + TEXT_TYPE + COMMA_SEP +
                     ItemDatabaseContract.ItemEntry.COLUMN_NAME_PRICE + DOUBLE_TYPE + COMMA_SEP +

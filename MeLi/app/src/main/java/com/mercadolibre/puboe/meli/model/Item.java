@@ -1,6 +1,5 @@
-package com.mercadolibre.puboe.meli;
+package com.mercadolibre.puboe.meli.model;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 

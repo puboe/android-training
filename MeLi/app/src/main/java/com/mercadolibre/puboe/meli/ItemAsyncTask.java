@@ -2,6 +2,8 @@ package com.mercadolibre.puboe.meli;
 
 import android.util.Log;
 
+import com.mercadolibre.puboe.meli.model.Item;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

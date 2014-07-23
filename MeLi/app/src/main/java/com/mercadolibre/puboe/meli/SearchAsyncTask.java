@@ -1,10 +1,9 @@
 package com.mercadolibre.puboe.meli;
 
 import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
-import org.json.JSONArray;
+import com.mercadolibre.puboe.meli.model.Search;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

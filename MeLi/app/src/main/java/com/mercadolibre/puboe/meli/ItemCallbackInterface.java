@@ -1,5 +1,7 @@
 package com.mercadolibre.puboe.meli;
 
+import com.mercadolibre.puboe.meli.model.Item;
+
 /**
  * Created by puboe on 10/07/14.
  */

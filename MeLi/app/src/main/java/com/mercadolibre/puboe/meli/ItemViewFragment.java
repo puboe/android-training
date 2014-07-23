@@ -1,6 +1,5 @@
 package com.mercadolibre.puboe.meli;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
@@ -10,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.mercadolibre.puboe.meli.model.Item;
+import com.mercadolibre.puboe.meli.photomanager.PhotoView;
 import com.mercadolibre.puboe.meli.sqlite.ItemDAOImpl;
 
 import java.net.MalformedURLException;

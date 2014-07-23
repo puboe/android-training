@@ -1,4 +1,4 @@
-package com.mercadolibre.puboe.meli;
+package com.mercadolibre.puboe.meli.photomanager;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,7 +35,7 @@ public class PhotoTaskRunnable implements Runnable {
 
     @Override
     public void run() {
-        Log.w("initializeTask", "Running PhotoTask runnable: " + hashCode());
+        Log.i("initializeTask", "Running PhotoTask runnable: " + hashCode());
         // Moves the current Thread into the background
 //        android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 
@@ -53,7 +53,7 @@ public class PhotoTaskRunnable implements Runnable {
     }
 
     private byte[] downloadImage(URL url) {
-        Log.e("downloadImage", url.toString());
+        Log.i("downloadImage", url.toString());
         byte[] byteBuffer;
 
         // Defines a handle for the byte download stream
@@ -62,23 +62,23 @@ public class PhotoTaskRunnable implements Runnable {
         // Downloads the image and catches IO errors
         try {
 
-            Log.e("downloadImage", "Before opening connection");
+//            Log.e("downloadImage", "Before opening connection");
 
             // Opens an HTTP connection to the image's URL
             HttpURLConnection httpConn =
                     (HttpURLConnection) url.openConnection();
 
-            Log.e("downloadImage", "Connection openned");
+//            Log.e("downloadImage", "Connection openned");
 
             // Sets the user agent to report to the server
             httpConn.setRequestProperty("User-Agent", USER_AGENT);
 
-            Log.e("downloadImage", "Before executing connection");
+//            Log.e("downloadImage", "Before executing connection");
 
             // Gets the input stream containing the image
             byteStream = httpConn.getInputStream();
 
-            Log.e("downloadImage", "Connection executed");
+//            Log.e("downloadImage", "Connection executed");
 
             /*
             * Gets the size of the file being downloaded. This
@@ -86,13 +86,13 @@ public class PhotoTaskRunnable implements Runnable {
                      */
             int contentSize = httpConn.getContentLength();
 
-            Log.e("downloadImage", "Reading contentLength: " + contentSize );
+//            Log.e("downloadImage", "Reading contentLength: " + contentSize );
 
             /*
                      * If the size of the image isn't available
                      */
             if (-1 == contentSize) {
-                Log.e("downloadImage", "ContentLength not present");
+//                Log.e("downloadImage", "ContentLength not present");
 
                 // Allocates a temporary buffer
                 byte[] tempBuffer = new byte[READ_SIZE];
@@ -115,7 +115,7 @@ public class PhotoTaskRunnable implements Runnable {
                          * allocates more buffer space.
                          */
                 outer: do {
-                    Log.e("downloadImage", "Looping");
+//                    Log.e("downloadImage", "Looping");
                     while (bufferLeft > 0) {
                                 /*
                                  * Reads from the URL location into
@@ -195,7 +195,7 @@ public class PhotoTaskRunnable implements Runnable {
                          * permanent buffer of that length.
                          */
             } else {
-                Log.e("downloadImage", "ContentLength present");
+//                Log.e("downloadImage", "ContentLength present");
                 byteBuffer = new byte[contentSize];
 
                 // How much of the buffer still remains empty
@@ -210,7 +210,7 @@ public class PhotoTaskRunnable implements Runnable {
                          * the image) have been read.
                          */
                 while (remainingLength > 0) {
-                    Log.e("downloadImage", "Looping contentLength present");
+//                    Log.e("downloadImage", "Looping contentLength present");
                     int readResult = byteStream.read(
                             byteBuffer,
                             bufferOffset,
@@ -247,15 +247,15 @@ public class PhotoTaskRunnable implements Runnable {
                 }
             }
 
-            Log.e("downloadImage", "finally block");
+//            Log.e("downloadImage", "finally block");
         }
 
-        Log.e("downloadImage", "returning byteBuffer");
+//        Log.e("downloadImage", "returning byteBuffer");
         return byteBuffer;
     }
 
     private Bitmap decodeImage(byte[] byteBuffer) {
-        Log.e("decodeImage", "decoding");
+        Log.i("decodeImage", "decoding");
         // Defines the Bitmap object that this thread will create
         Bitmap returnBitmap = null;
 

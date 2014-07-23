@@ -1,4 +1,4 @@
-package com.mercadolibre.puboe.meli.alarm;
+package com.mercadolibre.puboe.meli.tracker;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;

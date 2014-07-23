@@ -1,4 +1,4 @@
-package com.mercadolibre.puboe.meli.alarm;
+package com.mercadolibre.puboe.meli.tracker;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

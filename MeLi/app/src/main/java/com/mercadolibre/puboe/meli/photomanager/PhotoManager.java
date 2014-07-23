@@ -1,18 +1,15 @@
-package com.mercadolibre.puboe.meli;
+package com.mercadolibre.puboe.meli.photomanager;
 
-import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.util.LruCache;
-import android.widget.ImageView;
 
-import java.net.MalformedURLException;
+import com.mercadolibre.puboe.meli.R;
+
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -104,7 +101,7 @@ public class PhotoManager {
                         switch (inputMessage.what) {
 
                             case TASK_COMPLETE:
-                                Log.w("handleMessage", "TaskComplete");
+//                                Log.w("handleMessage", "TaskComplete");
 
                                 localView.setImageBitmap(photoTask.getImage());
                                 mPhotoCache.put(photoTask.getUrl(), photoTask.getImage());
@@ -112,7 +109,7 @@ public class PhotoManager {
                                 break;
 
                             case DOWNLOAD_FAILED:
-                                Log.w("handleMessage", "DownloadFailed");
+                                Log.e("handleMessage", "DownloadFailed");
                                 localView.setImageResource(R.drawable.imagedownloadfailed);
                                 recycleTask(photoTask);
                                 break;
@@ -138,14 +135,14 @@ public class PhotoManager {
 
             // The task finished downloading and decoding the image
             case TASK_COMPLETE:
-                Log.i("onCompleteTask", "taskComplete");
+//                Log.i("onCompleteTask", "taskComplete");
                 Message completeMessage = mHandler.obtainMessage(state, photoTask);
                 completeMessage.sendToTarget();
                 break;
 
             // In all other cases, pass along the message without any other action.
             default:
-                Log.i("onCompleteTask", "default");
+                Log.w("onCompleteTask", "default");
                 mHandler.obtainMessage(state, photoTask).sendToTarget();
                 break;
         }
@@ -170,7 +167,7 @@ public class PhotoManager {
 
             // Sets the display to show that the image is queued for downloading and decoding.
             imageView.setImageResource(R.drawable.imagequeued);
-            Log.i("PhotoManager", "executing photoTask");
+//            Log.i("PhotoManager", "executing photoTask");
             getInstance().mThreadPool.execute(photoTask.getRunnable());
         } else {
             imageView.setImageBitmap(bm);

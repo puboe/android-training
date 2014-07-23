@@ -1,4 +1,4 @@
-package com.mercadolibre.puboe.meli;
+package com.mercadolibre.puboe.meli.photomanager;
 
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -23,9 +23,9 @@ public class PhotoTask {
 
     public void initializeTask(URL url, PhotoView photoView, PhotoManager photoManager) {
         this.url = photoView.getLocation();
-        Log.w("initializeTask", url.toString());
+//        Log.w("initializeTask", url.toString());
         if(photoView == null) {
-            Log.w("initializeTask", "photoView == NULL");
+            Log.e("initializeTask", "photoView == NULL");
         }
         this.photoManager = photoManager;
         this.imageWeakRef = new WeakReference<PhotoView>(photoView);

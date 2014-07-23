@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.mercadolibre.puboe.meli.model.Item;
+import com.mercadolibre.puboe.meli.photomanager.PhotoView;
 
 import java.net.MalformedURLException;
 import java.net.URL;
