@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -14,9 +15,9 @@ import java.util.List;
 public class Search implements Serializable {
 
     private Paging paging;
-    private List<Item> results;
+    private LinkedHashSet<Item> results;
 
-    private Search(Paging paging, List<Item> results) {
+    private Search(Paging paging, LinkedHashSet<Item> results) {
         this.paging = paging;
         this.results = results;
     }
@@ -29,11 +30,11 @@ public class Search implements Serializable {
         this.paging = paging;
     }
 
-    public List<Item> getResults() {
+    public LinkedHashSet<Item> getResults() {
         return results;
     }
 
-    public void setResults(List<Item> results) {
+    public void setResults(LinkedHashSet<Item> results) {
         this.results = results;
     }
 
@@ -42,7 +43,7 @@ public class Search implements Serializable {
         JSONObject pag = search.getJSONObject("paging");
         Paging paging = new Paging(pag.getInt("total"), pag.getInt("offset"), pag.getInt("limit"));
         JSONArray res = search.getJSONArray("results");
-        List<Item> results = new ArrayList<Item>();
+        LinkedHashSet<Item> results = new LinkedHashSet<Item>();
 
         for(int i=0; i < res.length(); i++) {
             JSONObject jsonItem = res.getJSONObject(i);

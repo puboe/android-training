@@ -90,16 +90,18 @@ public class ItemViewFragment extends Fragment {
 
     public void showItem(final Item item) {
         itemObject = item;
-        PhotoView photoView = (PhotoView)getActivity().findViewById(R.id.item_image);
+        PhotoView photoView = (PhotoView)mainView.findViewById(R.id.item_image);
 
+        photoView.setImageResource(R.drawable.imagedownloading);
         try {
             URL mUrl = null;
             mUrl = new URL(item.getImageUrl());
-            Log.i("ItemViewActivity", item.getImageUrl());
+            Log.i("ItemViewFragment", "Setting image: " + item.getImageUrl());
             photoView.setImageURL(mUrl);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
-            photoView.setImageResource(R.drawable.imagedownloadfailed);
+//            e.printStackTrace();
+            Log.e(ItemViewFragment.class.getSimpleName(), "Malformed URL -> URL == null");
+            photoView.setImageResource(R.drawable.imagenotqueued);
         }
         TextView title = (TextView)mainView.findViewById(R.id.item_title);
         title.setText(item.getTitle());

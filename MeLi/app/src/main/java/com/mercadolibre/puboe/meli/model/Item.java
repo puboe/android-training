@@ -1,5 +1,7 @@
 package com.mercadolibre.puboe.meli.model;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,7 +52,12 @@ public class Item implements Serializable {
     public static Item parseCompleteItem(JSONObject jsonItem) throws JSONException {
         Item item = parseItemObject(jsonItem);
 
-        item.setImageUrl(jsonItem.getJSONArray("pictures").getJSONObject(0).getString("url"));
+        try {
+            item.setImageUrl(jsonItem.getJSONArray("pictures").getJSONObject(0).getString("url"));
+        } catch(JSONException e) {
+            Log.e(Item.class.getSimpleName(), "Item no tiene imagen.");
+            item.setImageUrl(null);
+        }
         item.setCondition(jsonItem.getString("condition"));
 
         return item;

@@ -64,7 +64,6 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
     @Override
     protected void onRestoreInstanceState(Bundle state) {
         searchObject = (Search) state.getSerializable(KEY_DATA);
-//        onSearchSuccess(search);
         super.onRestoreInstanceState(state);
     }
 
@@ -94,8 +93,42 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
 
     @Override
     public void onSearchSuccess(Search response) {
-        searchObject = response;
-        setResultsList(response);
+        if(searchObject != null) {
+            searchObject.getResults().addAll(response.getResults());
+            searchObject.setPaging(response.getPaging());
+        } else {
+            searchObject = response;
+        }
+
+
+        if (findViewById(R.id.fragment_container) != null) {
+            Log.i(SearchResults.class.getSimpleName(), "SINGLE-PANE itemViewFragment == null");
+
+            SearchResultsFragment searchResultsFragment =
+                    (SearchResultsFragment) getFragmentManager().findFragmentById(R.id.fragment_container);
+            if (searchResultsFragment != null) {
+                searchResultsFragment.showResults(searchObject);
+            } else {
+                Log.i("SearchResults", "searchResultsFragment == NULL");
+            }
+
+        } else {
+
+
+            Log.i(SearchResults.class.getSimpleName(), "TWO-PANE searchResultsFragment != null");
+            SearchResultsFragment searchResultsFragment = (SearchResultsFragment)
+                    getFragmentManager().findFragmentById(R.id.list_fragment);
+            searchResultsFragment.showResults(searchObject);
+
+//            SearchResultsFragment newFragment = SearchResultsFragment.newInstance(searchObject);
+//            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+//
+//            transaction.addToBackStack(null);
+//            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+//            transaction.replace(R.id.fragment_container, newFragment);
+//
+//            transaction.commit();
+        }
     }
 
     public void setResultsList(Search search) {
@@ -105,13 +138,7 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
         if (searchResultsFragment != null) {
             searchResultsFragment.showResults(search);
         } else {
-            searchResultsFragment =
-                    (SearchResultsFragment) getFragmentManager().findFragmentById(R.id.fragment_container);
-            if (searchResultsFragment != null) {
-                searchResultsFragment.showResults(search);
-            } else {
-                Log.i("SearchResults", "searchResultsFragment == NULL");
-            }
+
         }
     }
 
@@ -137,9 +164,6 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
     @Override
     public void onItemSelected(String id) {
         new ItemAsyncTask(this).execute(id);
-//        Intent intent = new Intent(SearchResults.this, ItemViewActivity.class);
-//        intent.putExtra(ItemViewActivity.KEY_ITEM, id);
-//        startActivity(intent);
     }
 
     @Override
@@ -154,34 +178,24 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
 
     @Override
     public void onItemRequestSuccess(Item response) {
+//        ItemViewFragment itemViewFragment = (ItemViewFragment)
+//                getFragmentManager().findFragmentById(R.id.fragment_container);
 
-//        TODO vista two-pane
-        ItemViewFragment itemViewFragment = (ItemViewFragment)
-                getFragmentManager().findFragmentById(R.id.vip_fragment);
-//
-        if (itemViewFragment != null) {
-            // If article frag is available, we're in two-pane layout...
-            // Call a method in the ArticleFragment to update its content
-            itemViewFragment.showItem(response);
-        } else {
-//            Otherwise, we're in the one-pane layout and must swap frags...
 
-            // Create fragment and give it an argument for the selected article
+        if (findViewById(R.id.fragment_container) != null) {
+            Log.i(SearchResults.class.getSimpleName(), "SINGLE-PANE itemViewFragment == null");
             ItemViewFragment newFragment = ItemViewFragment.newInstance(response);
-//            Bundle args = new Bundle();
-//            args.putSerializable(ItemViewFragment.KEY_ITEM, response);
-//            newFragment.setArguments(args);
-
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-            // Replace whatever is in the fragment_container view with this fragment,
-            // and add the transaction to the back stack so the user can navigate back
-            transaction.addToBackStack("hola");
+            transaction.addToBackStack(null);
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             transaction.replace(R.id.fragment_container, newFragment);
 
-            // Commit the transaction
             transaction.commit();
+        } else {
+            Log.i(SearchResults.class.getSimpleName(), "TWO-PANE itemViewFragment != null");
+            ItemViewFragment itemViewFragment = (ItemViewFragment) getFragmentManager().findFragmentById(R.id.vip_fragment);
+            itemViewFragment.showItem(response);
         }
     }
 

@@ -2,6 +2,7 @@ package com.mercadolibre.puboe.meli;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,8 @@ import com.mercadolibre.puboe.meli.photomanager.PhotoView;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by puboe on 03/07/14.
@@ -34,18 +37,19 @@ public class SearchAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int i) {
-        return search.getResults().get(i);
+        Object[] items = search.getResults().toArray();
+        return items[i];
     }
 
     @Override
     public long getItemId(int i) {
-        return search.getResults().indexOf(search.getResults().get(i));
+        return i;
     }
 
     private class ViewHolder {
         PhotoView photoView;
         TextView txtTitle;
-        TextView subTitle;
+        TextView subtitle;
         TextView txtPrice;
         TextView available;
     }
@@ -64,7 +68,7 @@ public class SearchAdapter extends BaseAdapter {
             holder.txtTitle = (TextView) view.findViewById(R.id.row_title);
             holder.txtPrice = (TextView) view.findViewById(R.id.row_price);
             holder.photoView = (PhotoView) view.findViewById(R.id.row_thumbnail);
-            holder.subTitle = (TextView) view.findViewById(R.id.row_subtitle);
+            holder.subtitle = (TextView) view.findViewById(R.id.row_subtitle);
             holder.available = (TextView) view.findViewById(R.id.row_available);
             view.setTag(holder);
         }
@@ -83,16 +87,16 @@ public class SearchAdapter extends BaseAdapter {
 //            Log.i("SearchAdapter", "Set image URL for: " + rowItem.getThumbnail());
             holder.photoView.setImageURL(mUrl);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            Log.e(SearchAdapter.class.getSimpleName(), "Malformed URL");
             holder.photoView.setImageResource(R.drawable.imagedownloadfailed);
         }
-        if(holder.subTitle != null) {
+        if(holder.subtitle != null) {
             if(!rowItem.getSubtitle().equals("null")) {
-                holder.subTitle.setText(rowItem.getSubtitle());
+                holder.subtitle.setText(rowItem.getSubtitle());
             } else {
-                holder.subTitle.setVisibility(View.GONE);
+                holder.subtitle.setVisibility(View.GONE);
             }
-
         }
         if(holder.available != null) {
             holder.available.setText(rowItem.getAvailableQuantity() + " disponibles");

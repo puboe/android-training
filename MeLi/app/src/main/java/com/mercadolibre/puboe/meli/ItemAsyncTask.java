@@ -22,18 +22,19 @@ public class ItemAsyncTask extends CustomAsyncTask {
     @Override
     protected String doInBackground(String... query) {
         String url = itemsBaseUrl + query[0];
-        Log.w("doInBackgroudURL", url);
+        Log.i(ItemAsyncTask.class.getSimpleName(), "doInBackgroudURL: " + url);
         return super.doInBackground(url);
     }
 
     @Override
     protected void onPostExecute(String result) {
+        System.out.println(result);
         try {
             JSONObject jsonItem = new JSONObject(result);
             Item response = Item.parseCompleteItem(jsonItem);
             itemCallbackInterface.onItemRequestSuccess(response);
         } catch (JSONException e) {
-            Log.w("onPostExecute", e.getLocalizedMessage());
+            Log.e(ItemAsyncTask.class.getSimpleName(), e.getLocalizedMessage());
         }
     }
 }

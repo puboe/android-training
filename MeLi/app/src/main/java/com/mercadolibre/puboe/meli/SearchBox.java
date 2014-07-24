@@ -15,6 +15,8 @@ import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.mercadolibre.puboe.meli.tracker.AlarmSetter;
+
 public class SearchBox extends Activity {
 
     public static final String KEY_QUERY = "key_query";
@@ -27,6 +29,7 @@ public class SearchBox extends Activity {
         Log.w("SearchResults", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_box);
+        AlarmSetter.startAlarm(this);
 
         editText = (EditText) findViewById(R.id.search_query);
 

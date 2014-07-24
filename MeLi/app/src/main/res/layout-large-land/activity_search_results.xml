@@ -9,12 +9,14 @@
         android:id="@+id/list_fragment"
         android:layout_weight="1"
         android:layout_width="0dp"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        tools:layout="@layout/fragment_search_results" />
 
     <fragment android:name="com.mercadolibre.puboe.meli.ItemViewFragment"
         android:id="@+id/vip_fragment"
         android:layout_weight="2"
         android:layout_width="0dp"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        tools:layout="@layout/fragment_item_view" />
 
 </LinearLayout>
