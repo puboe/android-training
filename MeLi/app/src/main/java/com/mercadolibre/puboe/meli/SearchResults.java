@@ -1,6 +1,7 @@
 package com.mercadolibre.puboe.meli;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,7 +12,7 @@ import android.view.MenuItem;
 
 import com.mercadolibre.puboe.meli.asynctask.ItemAsyncTask;
 import com.mercadolibre.puboe.meli.asynctask.ItemCallbackInterface;
-import com.mercadolibre.puboe.meli.asynctask.SearchAsyncTask;
+import com.mercadolibre.puboe.meli.asynctask.SearchAsyncTask2;
 import com.mercadolibre.puboe.meli.asynctask.SearchCallbackInterface;
 import com.mercadolibre.puboe.meli.model.Item;
 import com.mercadolibre.puboe.meli.model.Search;
@@ -20,6 +21,7 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
                                                         SearchResultsFragment.OnFragmentInteractionListener,
                                                         ItemCallbackInterface {
 
+    private static final String TAG_TASK_FRAGMENT = "task_fragment";
     public static final String SEARCH_ASYNC_TASK_IN_PROGRESS = "search_async_task_in_progress";
     public static final String ITEM_ASYNC_TASK_IN_PROGRESS = "item_async_task_in_progress";
     public static final String SEARCH_ASYNC_TASK_QUERY = "search_async_task_query";
@@ -29,7 +31,7 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
     public static final String KEY_VIP_ID = "key_vip_id";
     private Search searchObject;
     private String query;
-    private SearchAsyncTask searchAsyncTask;
+    private SearchTaskFragment searchTaskFragment;
     private ItemAsyncTask itemAsyncTask;
 
     @Override
@@ -40,11 +42,11 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
         if(savedInstanceState != null) {
             Log.i(SearchResults.class.getSimpleName(), "on Create: Restoring SavedInstanceState");
             searchObject = (Search) savedInstanceState.getSerializable(KEY_DATA);
-            if (savedInstanceState.getBoolean(SEARCH_ASYNC_TASK_IN_PROGRESS)) {
-                Log.i(SearchResults.class.getSimpleName(), "Restoring SearchAsyncTask");
-                String query = savedInstanceState.getString(SEARCH_ASYNC_TASK_QUERY);
-                onSearchRequested(query);
-            }
+//            if (savedInstanceState.getBoolean(SEARCH_ASYNC_TASK_IN_PROGRESS)) {
+//                Log.i(SearchResults.class.getSimpleName(), "Restoring SearchAsyncTask");
+//                String query = savedInstanceState.getString(SEARCH_ASYNC_TASK_QUERY);
+//                onSearchRequested(query);
+//            }
             if (savedInstanceState.getBoolean(ITEM_ASYNC_TASK_IN_PROGRESS)) {
                 Log.i(SearchResults.class.getSimpleName(), "Restoring ItemAsyncTask");
                 String query = savedInstanceState.getString(ITEM_ASYNC_TASK_QUERY);
@@ -75,16 +77,16 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(KEY_DATA, searchObject);
-        if (searchAsyncTask != null && searchAsyncTask.getStatus() != AsyncTask.Status.FINISHED) {
-            Log.i(SearchResults.class.getSimpleName(), "Saving SearchAsyncTask");
-            String query = searchAsyncTask.getQuery();
-            searchAsyncTask.cancel(true);
-            if (query != null) {
-                outState.putBoolean(SEARCH_ASYNC_TASK_IN_PROGRESS, true);
-                outState.putString(SEARCH_ASYNC_TASK_QUERY, query);
-            }
-            searchAsyncTask = null;
-        }
+//        if (searchAsyncTask != null && searchAsyncTask.getStatus() != AsyncTask.Status.FINISHED) {
+//            Log.i(SearchResults.class.getSimpleName(), "Saving SearchAsyncTask");
+//            String query = searchAsyncTask.getQuery();
+//            searchAsyncTask.cancel(true);
+//            if (query != null) {
+//                outState.putBoolean(SEARCH_ASYNC_TASK_IN_PROGRESS, true);
+//                outState.putString(SEARCH_ASYNC_TASK_QUERY, query);
+//            }
+//            searchAsyncTask = null;
+//        }
         if (itemAsyncTask != null && itemAsyncTask.getStatus() != AsyncTask.Status.FINISHED) {
             Log.i(SearchResults.class.getSimpleName(), "Saving ItemAsyncTask");
             String query = itemAsyncTask.getQuery();
@@ -99,7 +101,7 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
 
     @Override
     protected void onRestoreInstanceState(Bundle state) {
-        Log.i(SearchResults.class.getSimpleName(), "onResoreInstanceState");
+        Log.i(SearchResults.class.getSimpleName(), "onRestoreInstanceState");
 //        searchObject = (Search) state.getSerializable(KEY_DATA);
         super.onRestoreInstanceState(state);
     }
@@ -124,7 +126,18 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
         if(query == null)
             return;
         this.query = query;
-        searchAsyncTask =  (SearchAsyncTask) new SearchAsyncTask(this).execute(query);
+        FragmentManager fm = getFragmentManager();
+        searchTaskFragment = (SearchTaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
+
+        // If the Fragment is non-null, then it is currently being
+        // retained across a configuration change.
+        if (searchTaskFragment == null) {
+            searchTaskFragment = new SearchTaskFragment();
+            Bundle args = new Bundle();
+            args.putString(SearchTaskFragment.KEY_ARGS, query);
+            searchTaskFragment.setArguments(args);
+            fm.beginTransaction().add(searchTaskFragment, TAG_TASK_FRAGMENT).commit();
+        }
     }
 
     @Override
@@ -161,7 +174,7 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
 //
 //            transaction.commit();
         }
-        searchAsyncTask = null;
+//        searchAsyncTask = null;
     }
 
     @Override
@@ -195,7 +208,8 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
         getSearchObject().getPaging().setOffset(getSearchObject().getPaging().getOffset()+15);
         String newQuery = query + "&offset=" + getSearchObject().getPaging().getOffset();
         Log.w("doSearchMore", newQuery);
-        searchAsyncTask = (SearchAsyncTask) new SearchAsyncTask(this).execute(newQuery);
+        // TODO ROTACION
+        new SearchAsyncTask2(this).execute(newQuery);
     }
 
     @Override

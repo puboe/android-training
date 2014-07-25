@@ -69,7 +69,10 @@ public class SearchResultsFragment extends ListFragment {
         Log.i("SearchResultsFragemnt", "onViewCreated with saved state: " + (savedInstanceState != null) + " and searchObject: " + (mListener.getSearchObjectFromActivity() != null) + " and adapter: " + (adapter != null));
 //        System.out.println("Not first: " + savedInstanceState.getBoolean("not_first"));
         if(savedInstanceState != null && savedInstanceState.getBoolean("not_first")) {
-            showResults(mListener.getSearchObjectFromActivity());
+            Search search = mListener.getSearchObjectFromActivity();
+            if(search != null) {
+                showResults(search);
+            }
         }
 //        if(searchObject == null && savedInstanceState != null) {
 //            Search search = (Search) savedInstanceState.getSerializable(KEY_DATA);
