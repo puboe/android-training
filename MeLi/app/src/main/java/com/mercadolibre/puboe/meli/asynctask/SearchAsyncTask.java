@@ -1,4 +1,4 @@
-package com.mercadolibre.puboe.meli;
+package com.mercadolibre.puboe.meli.asynctask;
 
 import android.util.Log;
 
@@ -22,8 +22,9 @@ public class SearchAsyncTask extends CustomAsyncTask {
 
     @Override
     protected String doInBackground(String... query) {
+        setQuery(query[0]);
         String url = searchBaseUrl + query[0] + searchParameters;
-        Log.w("doInBackgroudURL", url);
+        Log.w(SearchAsyncTask.class.getSimpleName(), "doInBackgroudURL: " + url);
         return super.doInBackground(url);
     }
 
@@ -32,9 +33,10 @@ public class SearchAsyncTask extends CustomAsyncTask {
         try {
             JSONObject jsonSearch = new JSONObject(result);
             Search response = Search.parseSearchObject(jsonSearch);
+            Log.i(SearchAsyncTask.class.getSimpleName(), "callbackInterface: " + callbackInterface);
             callbackInterface.onSearchSuccess(response);
         } catch (JSONException e) {
-            Log.w("onPostExecute", e.getLocalizedMessage());
+            Log.w(SearchAsyncTask.class.getSimpleName(), "onPostExecute: " + e.getLocalizedMessage());
         }
     }
 }

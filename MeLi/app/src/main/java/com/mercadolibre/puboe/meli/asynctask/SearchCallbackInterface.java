@@ -1,4 +1,4 @@
-package com.mercadolibre.puboe.meli;
+package com.mercadolibre.puboe.meli.asynctask;
 
 import com.mercadolibre.puboe.meli.model.Search;
 

@@ -1,4 +1,4 @@
-package com.mercadolibre.puboe.meli;
+package com.mercadolibre.puboe.meli.asynctask;
 
 import android.util.Log;
 
@@ -21,6 +21,7 @@ public class ItemAsyncTask extends CustomAsyncTask {
 
     @Override
     protected String doInBackground(String... query) {
+        setQuery(query[0]);
         String url = itemsBaseUrl + query[0];
         Log.i(ItemAsyncTask.class.getSimpleName(), "doInBackgroudURL: " + url);
         return super.doInBackground(url);

@@ -1,4 +1,4 @@
-package com.mercadolibre.puboe.meli;
+package com.mercadolibre.puboe.meli.asynctask;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -20,6 +20,8 @@ import java.io.IOException;
  * Created by puboe on 03/07/14.
  */
 public class CustomAsyncTask extends AsyncTask<String, Void, String> {
+
+    String query;
 
     protected String doInBackground(String... strings) {
         HttpClient httpclient = new DefaultHttpClient();
@@ -45,5 +47,13 @@ public class CustomAsyncTask extends AsyncTask<String, Void, String> {
             //TODO Handle problems..
         }
         return responseString;
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
     }
 }

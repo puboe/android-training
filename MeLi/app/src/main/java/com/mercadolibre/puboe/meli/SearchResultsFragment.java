@@ -26,7 +26,7 @@ public class SearchResultsFragment extends ListFragment {
 
     public static final String KEY_DATA = "key_data";
 
-    private Search searchObject;
+//    private Search searchObject;
     private SearchAdapter adapter;
     private ListView listView;
     private View mainView;
@@ -48,17 +48,6 @@ public class SearchResultsFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
-//        if(savedInstanceState != null) {
-//            Log.i("SearchrResultsFragment", "onCreate getting searchObject from saved instance");
-//            searchObject = (Search) savedInstanceState.getSerializable(KEY_DATA);
-//            setListAdapter(new SearchAdapter(getActivity(), searchObject));
-//        }
-
     }
 
     @Override
@@ -77,12 +66,18 @@ public class SearchResultsFragment extends ListFragment {
         listView = (ListView) mainView.findViewById(android.R.id.list);
         listView.setOnScrollListener(new mOnScrollListener());
 
-        Log.i("SearchResultsFragemnt", "onViewCreated with saved state: " + (savedInstanceState != null) + " and searchObject: " + (searchObject != null) + " and adapter: " + (adapter != null));
-        if(searchObject == null && savedInstanceState != null) {
-            showResults((Search) savedInstanceState.getSerializable(KEY_DATA));
-        } else if (searchObject != null){
-            showResults(searchObject);
+        Log.i("SearchResultsFragemnt", "onViewCreated with saved state: " + (savedInstanceState != null) + " and searchObject: " + (mListener.getSearchObjectFromActivity() != null) + " and adapter: " + (adapter != null));
+//        System.out.println("Not first: " + savedInstanceState.getBoolean("not_first"));
+        if(savedInstanceState != null && savedInstanceState.getBoolean("not_first")) {
+            showResults(mListener.getSearchObjectFromActivity());
         }
+//        if(searchObject == null && savedInstanceState != null) {
+//            Search search = (Search) savedInstanceState.getSerializable(KEY_DATA);
+//            if(search != null)
+//                showResults(search);
+//        } else if (searchObject != null){
+//            showResults(searchObject);
+//        }
     }
 
     @Override
@@ -108,30 +103,31 @@ public class SearchResultsFragment extends ListFragment {
     public void onStart() {
         super.onStart();
         Bundle args = getArguments();
-        if (args != null) {
-            showResults((Search)args.getSerializable(KEY_DATA));
-        } else if (searchObject != null) {
-            showResults(searchObject);
-        }
+//        if (args != null) {
+//            showResults((Search)args.getSerializable(KEY_DATA));
+//        } else if (searchObject != null) {
+//            showResults(searchObject);
+//        }
         // When in two-pane layout, set the listview to highlight the selected list item
         // (We do this during onStart because at the point the listview is available.)
         if (getFragmentManager().findFragmentById(R.id.list_fragment) != null) {
-            getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+            listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         Log.i("SearchResultsFragment", "onSaveInstanceState");
-        outState.putSerializable(KEY_DATA, searchObject);
+        outState.putBoolean("not_first", true);
+//        outState.putSerializable(KEY_DATA, searchObject);
         super.onSaveInstanceState(outState);
     }
 
     public void showResults(Search results) {
-        searchObject = results;
+//        searchObject = results;
 
         if (adapter == null) {
-            adapter = new SearchAdapter(getActivity(), searchObject);
+            adapter = new SearchAdapter(getActivity(), results);
             setListAdapter(adapter);
         } else if(adapter != null && getListAdapter() != null){
             adapter.notifyDataSetChanged();
@@ -153,6 +149,8 @@ public class SearchResultsFragment extends ListFragment {
 
         public void onRequestMoreItems();
 
+        public Search getSearchObjectFromActivity();
+
     }
 
     private class mOnScrollListener implements AbsListView.OnScrollListener {
@@ -163,19 +161,19 @@ public class SearchResultsFragment extends ListFragment {
 
         @Override
         public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-            if (getSearchObject() == null) {
+            if (mListener.getSearchObjectFromActivity() == null) {
                 Log.w("onScroll", "searchObject == null");
                 return;
             }
 
-            if (firstVisibleItem + visibleItemCount == totalItemCount && totalItemCount > getSearchObject().getPaging().getOffset()) {
+            if (firstVisibleItem + visibleItemCount == totalItemCount && totalItemCount > mListener.getSearchObjectFromActivity().getPaging().getOffset()) {
                 Log.w("onScroll", "firstVisible: " + firstVisibleItem + ", visibleCount:" + visibleItemCount + ", totalCount: " + totalItemCount);
                 mListener.onRequestMoreItems();
             }
         }
     }
 
-        public Search getSearchObject() {
-        return searchObject;
-    }
+//        public Search getSearchObject() {
+//        return searchObject;
+//    }
 }
