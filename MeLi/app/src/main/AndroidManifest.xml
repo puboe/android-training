@@ -32,17 +32,17 @@
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
         </activity>
-        <!--<activity-->
-            <!--android:name=".ItemViewActivity"-->
-            <!--android:label="@string/title_activity_item_view"-->
-            <!--android:parentActivityName=".SearchResults" >-->
-            <!--<meta-data-->
-                <!--android:name="android.PARENT_ACTIVITY"-->
-                <!--android:value="com.mercadolibre.puboe.meli.SearchResults" />-->
-        <!--</activity>-->
 
         <service
             android:name=".tracker.ItemTrackerService"
+            android:exported="false" />
+
+        <service
+            android:name=".robospice.SearchRetrofitSpiceService"
+            android:exported="false" />
+
+        <service
+            android:name=".robospice.ItemRetrofitSpiceService"
             android:exported="false" />
 
         <receiver android:name=".tracker.AlarmBroadcastReceiver" />
