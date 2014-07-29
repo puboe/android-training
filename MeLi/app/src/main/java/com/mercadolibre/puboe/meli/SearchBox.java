@@ -29,7 +29,7 @@ public class SearchBox extends Activity {
         Log.w("SearchResults", "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_box);
-        AlarmSetter.startAlarm(this);
+//        AlarmSetter.startAlarm(this);
 
         editText = (EditText) findViewById(R.id.search_query);
 

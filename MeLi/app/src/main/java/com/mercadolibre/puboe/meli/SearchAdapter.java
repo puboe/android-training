@@ -2,21 +2,16 @@ package com.mercadolibre.puboe.meli;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mercadolibre.puboe.meli.model.Item;
 import com.mercadolibre.puboe.meli.model.Search;
-import com.mercadolibre.puboe.meli.photomanager.PhotoView;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
+import com.squareup.picasso.Picasso;
 
 /**
  * Created by puboe on 03/07/14.
@@ -47,7 +42,7 @@ public class SearchAdapter extends BaseAdapter {
     }
 
     private class ViewHolder {
-        PhotoView photoView;
+        ImageView imageView;
         TextView txtTitle;
         TextView subtitle;
         TextView txtPrice;
@@ -67,7 +62,7 @@ public class SearchAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.txtTitle = (TextView) view.findViewById(R.id.row_title);
             holder.txtPrice = (TextView) view.findViewById(R.id.row_price);
-            holder.photoView = (PhotoView) view.findViewById(R.id.row_thumbnail);
+            holder.imageView = (ImageView) view.findViewById(R.id.row_thumbnail);
             holder.subtitle = (TextView) view.findViewById(R.id.row_subtitle);
             holder.available = (TextView) view.findViewById(R.id.row_available);
             view.setTag(holder);
@@ -81,18 +76,13 @@ public class SearchAdapter extends BaseAdapter {
 
         holder.txtTitle.setText(rowItem.getTitle());
         holder.txtPrice.setText("$" + rowItem.getPrice().toString());
-        try {
-            URL mUrl = null;
-            mUrl = new URL(rowItem.getThumbnail());
-//            Log.i("SearchAdapter", "Set image URL for: " + rowItem.getThumbnail());
-            holder.photoView.setImageURL(mUrl);
-        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-            Log.e(SearchAdapter.class.getSimpleName(), "Malformed URL");
-            holder.photoView.setImageResource(R.drawable.imagedownloadfailed);
+        if(rowItem.getThumbnail() != null && !rowItem.getThumbnail().isEmpty()) {
+            Picasso.with(context).load(rowItem.getThumbnail()).into(holder.imageView);
+        } else {
+            holder.imageView.setImageResource(R.drawable.imagequeued);
         }
         if(holder.subtitle != null) {
-            if(!rowItem.getSubtitle().equals("null")) {
+            if(rowItem.getSubtitle() != null) {
                 holder.subtitle.setText(rowItem.getSubtitle());
             } else {
                 holder.subtitle.setVisibility(View.GONE);

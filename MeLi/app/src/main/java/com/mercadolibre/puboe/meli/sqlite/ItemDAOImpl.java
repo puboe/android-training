@@ -78,7 +78,7 @@ public class ItemDAOImpl implements ItemDAO {
         values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_SUBTITLE, item.getSubtitle());
         values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_PRICE, item.getPrice());
         values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_THUMBNAIL, item.getThumbnail());
-        values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_IMAGEURL, item.getImageUrl());
+//        values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_IMAGEURL, item.getImageUrl());
         values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_CONDITION, item.getCondition());
         values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_AVAILABLE, item.getAvailableQuantity());
         long insertId = database.insert(ItemDatabaseContract.ItemEntry.TABLE_NAME, null,
@@ -97,7 +97,7 @@ public class ItemDAOImpl implements ItemDAO {
         values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_SUBTITLE, item.getSubtitle());
         values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_PRICE, item.getPrice());
         values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_THUMBNAIL, item.getThumbnail());
-        values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_IMAGEURL, item.getImageUrl());
+//        values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_IMAGEURL, item.getImageUrl());
         values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_CONDITION, item.getCondition());
         values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_AVAILABLE, item.getAvailableQuantity());
         long updateId = database.update(ItemDatabaseContract.ItemEntry.TABLE_NAME, values,

@@ -1,38 +1,34 @@
 package com.mercadolibre.puboe.meli;
 
-import android.app.Activity;
-import android.app.FragmentManager;
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
-import com.mercadolibre.puboe.meli.asynctask.ItemAsyncTask;
 import com.mercadolibre.puboe.meli.asynctask.ItemCallbackInterface;
-import com.mercadolibre.puboe.meli.asynctask.SearchAsyncTask2;
 import com.mercadolibre.puboe.meli.asynctask.SearchCallbackInterface;
 import com.mercadolibre.puboe.meli.model.Item;
 import com.mercadolibre.puboe.meli.model.Search;
+import com.mercadolibre.puboe.meli.robospice.ItemRetrofitRequest;
+import com.mercadolibre.puboe.meli.robospice.SearchRetrofitRequest;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
 
-public class SearchResults extends Activity implements SearchCallbackInterface,
+public class SearchResults extends BaseActivity implements SearchCallbackInterface,
                                                         SearchResultsFragment.OnFragmentInteractionListener,
                                                         ItemCallbackInterface {
 
-    private static final String TAG_TASK_FRAGMENT = "task_fragment";
-    public static final String SEARCH_ASYNC_TASK_IN_PROGRESS = "search_async_task_in_progress";
-    public static final String ITEM_ASYNC_TASK_IN_PROGRESS = "item_async_task_in_progress";
-    public static final String SEARCH_ASYNC_TASK_QUERY = "search_async_task_query";
-    public static final String ITEM_ASYNC_TASK_QUERY = "search_async_task_query";
     public static final String ACTION_SHOW_VIP = "action_show_vip";
     public static final String KEY_DATA = "key_data";
+    public static final String KEY_ITEM = "key_item";
     public static final String KEY_VIP_ID = "key_vip_id";
+    public static final Integer LIMIT = 15;
     private Search searchObject;
+    private Item itemObject;
     private String query;
-    private SearchTaskFragment searchTaskFragment;
-    private ItemAsyncTask itemAsyncTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,29 +38,35 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
         if(savedInstanceState != null) {
             Log.i(SearchResults.class.getSimpleName(), "on Create: Restoring SavedInstanceState");
             searchObject = (Search) savedInstanceState.getSerializable(KEY_DATA);
-//            if (savedInstanceState.getBoolean(SEARCH_ASYNC_TASK_IN_PROGRESS)) {
-//                Log.i(SearchResults.class.getSimpleName(), "Restoring SearchAsyncTask");
-//                String query = savedInstanceState.getString(SEARCH_ASYNC_TASK_QUERY);
-//                onSearchRequested(query);
-//            }
-            if (savedInstanceState.getBoolean(ITEM_ASYNC_TASK_IN_PROGRESS)) {
-                Log.i(SearchResults.class.getSimpleName(), "Restoring ItemAsyncTask");
-                String query = savedInstanceState.getString(ITEM_ASYNC_TASK_QUERY);
-                onItemSelected(query);
-            }
+            itemObject = (Item) savedInstanceState.getSerializable(KEY_ITEM);
         }
 
         setContentView(R.layout.activity_search_results);
 
         if (findViewById(R.id.fragment_container) != null) {
-            if (savedInstanceState != null) {
-                Log.i("SearchResults", "savedInstanceState != NULL");
-                return;
-            }
             SearchResultsFragment firstFragment = SearchResultsFragment.newInstance();
-
-            getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, firstFragment).commit();
+            if (savedInstanceState != null) {
+                Log.i("SearchResults", "savedInstanceState PORTRAIT != NULL");
+                getFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.fragment_container, firstFragment).commit();
+            } else {
+                getFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
+            }
+        } else if(findViewById(R.id.list_frame) != null) {
+            SearchResultsFragment searchResultsFragment = SearchResultsFragment.newInstance();
+            ItemViewFragment itemViewFragment = ItemViewFragment.newInstance();
+            if (savedInstanceState != null) {
+                Log.i("SearchResults", "savedInstanceState LAND != NULL");
+                getFragmentManager().beginTransaction().replace(R.id.list_frame, searchResultsFragment).commit();
+                getFragmentManager().beginTransaction().replace(R.id.vip_frame, itemViewFragment).commit();
+            } else {
+                getFragmentManager().beginTransaction().add(R.id.list_frame, searchResultsFragment).commit();
+                if(itemObject != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable(ItemViewFragment.KEY_ITEM, itemObject);
+                    itemViewFragment.setArguments(bundle);
+                }
+                getFragmentManager().beginTransaction().add(R.id.vip_frame, itemViewFragment).commit();
+            }
         } else {
             Log.i("SearchResults", "fragment_container == NULL");
         }
@@ -77,32 +79,12 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(KEY_DATA, searchObject);
-//        if (searchAsyncTask != null && searchAsyncTask.getStatus() != AsyncTask.Status.FINISHED) {
-//            Log.i(SearchResults.class.getSimpleName(), "Saving SearchAsyncTask");
-//            String query = searchAsyncTask.getQuery();
-//            searchAsyncTask.cancel(true);
-//            if (query != null) {
-//                outState.putBoolean(SEARCH_ASYNC_TASK_IN_PROGRESS, true);
-//                outState.putString(SEARCH_ASYNC_TASK_QUERY, query);
-//            }
-//            searchAsyncTask = null;
-//        }
-        if (itemAsyncTask != null && itemAsyncTask.getStatus() != AsyncTask.Status.FINISHED) {
-            Log.i(SearchResults.class.getSimpleName(), "Saving ItemAsyncTask");
-            String query = itemAsyncTask.getQuery();
-            itemAsyncTask.cancel(true);
-            if (query != null) {
-                outState.putBoolean(ITEM_ASYNC_TASK_IN_PROGRESS, true);
-                outState.putString(ITEM_ASYNC_TASK_QUERY, query);
-            }
-            itemAsyncTask = null;
-        }
+        outState.putSerializable(KEY_ITEM, itemObject);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle state) {
         Log.i(SearchResults.class.getSimpleName(), "onRestoreInstanceState");
-//        searchObject = (Search) state.getSerializable(KEY_DATA);
         super.onRestoreInstanceState(state);
     }
 
@@ -126,18 +108,18 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
         if(query == null)
             return;
         this.query = query;
-        FragmentManager fm = getFragmentManager();
-        searchTaskFragment = (SearchTaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
+        SearchRetrofitRequest searchRetrofitRequest = new SearchRetrofitRequest(query, 0, LIMIT);
+        getSearchSpiceManager().execute(searchRetrofitRequest, new SearchRequestListener());
+    }
 
-        // If the Fragment is non-null, then it is currently being
-        // retained across a configuration change.
-        if (searchTaskFragment == null) {
-            searchTaskFragment = new SearchTaskFragment();
-            Bundle args = new Bundle();
-            args.putString(SearchTaskFragment.KEY_ARGS, query);
-            searchTaskFragment.setArguments(args);
-            fm.beginTransaction().add(searchTaskFragment, TAG_TASK_FRAGMENT).commit();
-        }
+    @Override
+    public void onRequestMoreItems() {
+        if(query == null)
+            return;
+        getSearchObject().getPaging().setOffset(getSearchObject().getPaging().getOffset()+15);
+
+        SearchRetrofitRequest searchRetrofitRequest = new SearchRetrofitRequest(query, getSearchObject().getPaging().getOffset(), LIMIT);
+        getSearchSpiceManager().execute(searchRetrofitRequest, new SearchRequestListener());
     }
 
     @Override
@@ -162,19 +144,9 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
         } else {
             Log.i(SearchResults.class.getSimpleName(), "TWO-PANE searchResultsFragment != null");
             SearchResultsFragment searchResultsFragment = (SearchResultsFragment)
-                    getFragmentManager().findFragmentById(R.id.list_fragment);
+                    getFragmentManager().findFragmentById(R.id.list_frame);
             searchResultsFragment.showResults(searchObject);
-
-//            SearchResultsFragment newFragment = SearchResultsFragment.newInstance(searchObject);
-//            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-//
-//            transaction.addToBackStack(null);
-//            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-//            transaction.replace(R.id.fragment_container, newFragment);
-//
-//            transaction.commit();
         }
-//        searchAsyncTask = null;
     }
 
     @Override
@@ -198,26 +170,20 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
 
     @Override
     public void onItemSelected(String id) {
-        itemAsyncTask = (ItemAsyncTask) new ItemAsyncTask(this).execute(id);
-    }
-
-    @Override
-    public void onRequestMoreItems() {
-        if(query == null)
-            return;
-        getSearchObject().getPaging().setOffset(getSearchObject().getPaging().getOffset()+15);
-        String newQuery = query + "&offset=" + getSearchObject().getPaging().getOffset();
-        Log.w("doSearchMore", newQuery);
-        // TODO ROTACION
-        new SearchAsyncTask2(this).execute(newQuery);
+        ItemRetrofitRequest itemRetrofitRequest = new ItemRetrofitRequest(id);
+        getItemSpiceManager().execute(itemRetrofitRequest, new ItemRequestListener());
     }
 
     @Override
     public void onItemRequestSuccess(Item response) {
+        itemObject = response;
 
         if (findViewById(R.id.fragment_container) != null) {
-            Log.i(SearchResults.class.getSimpleName(), "SINGLE-PANE itemViewFragment == null");
-            ItemViewFragment newFragment = ItemViewFragment.newInstance(response);
+            Log.i(SearchResults.class.getSimpleName(), "SINGLE-PANE");
+            ItemViewFragment newFragment = ItemViewFragment.newInstance();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(ItemViewFragment.KEY_ITEM, itemObject);
+            newFragment.setArguments(bundle);
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
             transaction.addToBackStack(null);
@@ -226,11 +192,10 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
 
             transaction.commit();
         } else {
-            Log.i(SearchResults.class.getSimpleName(), "TWO-PANE itemViewFragment != null");
-            ItemViewFragment itemViewFragment = (ItemViewFragment) getFragmentManager().findFragmentById(R.id.vip_fragment);
-            itemViewFragment.showItem(response);
+            Log.i(SearchResults.class.getSimpleName(), "TWO-PANE");
+            ItemViewFragment itemViewFragment = (ItemViewFragment) getFragmentManager().findFragmentById(R.id.vip_frame);
+            itemViewFragment.showItem(itemObject);
         }
-        itemAsyncTask = null;
     }
 
     @Override
@@ -244,6 +209,34 @@ public class SearchResults extends Activity implements SearchCallbackInterface,
 
     public String getQuery() {
         return query;
+    }
+
+    public final class SearchRequestListener implements RequestListener<Search> {
+
+        @Override
+        public void onRequestFailure(SpiceException spiceException) {
+            Toast.makeText(SearchResults.this, "search request failure", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onRequestSuccess(Search result) {
+            Toast.makeText(SearchResults.this, "search request success", Toast.LENGTH_SHORT).show();
+            onSearchSuccess(result);
+        }
+    }
+
+    public final class ItemRequestListener implements RequestListener<Item> {
+
+        @Override
+        public void onRequestFailure(SpiceException spiceException) {
+            Toast.makeText(SearchResults.this, "item request failure", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onRequestSuccess(Item result) {
+            Toast.makeText(SearchResults.this, "item request success", Toast.LENGTH_SHORT).show();
+            onItemRequestSuccess(result);
+        }
     }
 
 }

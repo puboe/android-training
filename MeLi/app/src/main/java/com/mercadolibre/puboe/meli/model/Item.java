@@ -1,15 +1,16 @@
 package com.mercadolibre.puboe.meli.model;
 
-import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by puboe on 03/07/14.
  */
+
 public class Item implements Serializable {
 
     private String id;
@@ -18,9 +19,9 @@ public class Item implements Serializable {
     private Double price;
     private String thumbnail;
 
-    private String imageUrl;
+    private List<Picture> pictures = new ArrayList<Picture>();
     private String condition;
-    private Integer availableQuantity;
+    private Integer available_quantity;
 
 
     private Item(String id, String title, String subtitle, Double price, String thumbnail, Integer availableQuantity) {
@@ -29,12 +30,12 @@ public class Item implements Serializable {
         this.subtitle = subtitle;
         this.price = price;
         this.thumbnail = thumbnail;
-        this.availableQuantity = availableQuantity;
+        this.available_quantity = availableQuantity;
     }
 
     public Item(String id, String title, String subtitle, Double price, String thumbnail, Integer availableQuantity, String imageUrl, String condition) {
         this(id, title, subtitle, price, thumbnail, availableQuantity);
-        this.imageUrl = imageUrl;
+//        this.imageUrl = imageUrl;
         this.condition = condition;
     }
 
@@ -52,12 +53,12 @@ public class Item implements Serializable {
     public static Item parseCompleteItem(JSONObject jsonItem) throws JSONException {
         Item item = parseItemObject(jsonItem);
 
-        try {
-            item.setImageUrl(jsonItem.getJSONArray("pictures").getJSONObject(0).getString("url"));
-        } catch(JSONException e) {
-            Log.e(Item.class.getSimpleName(), "Item no tiene imagen.");
-            item.setImageUrl(null);
-        }
+//        try {
+////            item.setImageUrl(jsonItem.getJSONArray("pictures").getJSONObject(0).getString("url"));
+//        } catch(JSONException e) {
+//            Log.e(Item.class.getSimpleName(), "Item no tiene imagen.");
+////            item.setImageUrl(null);
+//        }
         item.setCondition(jsonItem.getString("condition"));
 
         return item;
@@ -95,13 +96,13 @@ public class Item implements Serializable {
         this.thumbnail = thumbnail;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
+//    public String getImageUrl() {
+//        return imageUrl;
+//    }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
+//    public void setImageUrl(String imageUrl) {
+//        this.imageUrl = imageUrl;
+//    }
 
     public String getCondition() {
         return condition;
@@ -112,11 +113,11 @@ public class Item implements Serializable {
     }
 
     public Integer getAvailableQuantity() {
-        return availableQuantity;
+        return available_quantity;
     }
 
     public void setAvailableQuantity(Integer availableQuantity) {
-        this.availableQuantity = availableQuantity;
+        this.available_quantity = availableQuantity;
     }
 
     public String getSubtitle() {
@@ -125,6 +126,10 @@ public class Item implements Serializable {
 
     public void setSubtitle(String subtitle) {
         this.subtitle = subtitle;
+    }
+
+    public List<Picture> getPictures() {
+        return pictures;
     }
 
     @Override
