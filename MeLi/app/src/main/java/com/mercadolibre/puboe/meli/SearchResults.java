@@ -150,25 +150,6 @@ public class SearchResults extends BaseActivity implements SearchCallbackInterfa
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.search_results, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onItemSelected(String id) {
         ItemRetrofitRequest itemRetrofitRequest = new ItemRetrofitRequest(id);
         getItemSpiceManager().execute(itemRetrofitRequest, new ItemRequestListener());
@@ -215,12 +196,12 @@ public class SearchResults extends BaseActivity implements SearchCallbackInterfa
 
         @Override
         public void onRequestFailure(SpiceException spiceException) {
-            Toast.makeText(SearchResults.this, "search request failure", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SearchResults.this, "Search request failed", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onRequestSuccess(Search result) {
-            Toast.makeText(SearchResults.this, "search request success", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(SearchResults.this, "search request success", Toast.LENGTH_SHORT).show();
             onSearchSuccess(result);
         }
     }
@@ -229,12 +210,12 @@ public class SearchResults extends BaseActivity implements SearchCallbackInterfa
 
         @Override
         public void onRequestFailure(SpiceException spiceException) {
-            Toast.makeText(SearchResults.this, "item request failure", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SearchResults.this, "Item request failed", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onRequestSuccess(Item result) {
-            Toast.makeText(SearchResults.this, "item request success", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(SearchResults.this, "item request success", Toast.LENGTH_SHORT).show();
             onItemRequestSuccess(result);
         }
     }

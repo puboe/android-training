@@ -10,10 +10,10 @@ import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.mercadolibre.puboe.meli.SearchResults;
-import com.mercadolibre.puboe.meli.model.Item;
 import com.mercadolibre.puboe.meli.ItemDAO;
 import com.mercadolibre.puboe.meli.R;
+import com.mercadolibre.puboe.meli.SearchResults;
+import com.mercadolibre.puboe.meli.model.Item;
 import com.mercadolibre.puboe.meli.sqlite.ItemDAOImpl;
 
 import org.apache.http.HttpResponse;
