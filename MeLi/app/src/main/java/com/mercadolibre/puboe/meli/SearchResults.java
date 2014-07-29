@@ -2,6 +2,7 @@ package com.mercadolibre.puboe.meli;
 
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -96,10 +97,16 @@ public class SearchResults extends BaseActivity implements SearchCallbackInterfa
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getExtras().getString(SearchBox.KEY_QUERY);
+            Log.i(SearchResults.class.getSimpleName(), "Query: " + query);
             onSearchRequested(query);
         } else if(intent.getAction().equals(ACTION_SHOW_VIP)) {
             String id = intent.getExtras().getString(KEY_VIP_ID);
             onItemSelected(id);
+        } else if(intent.getAction().equals(Intent.ACTION_VIEW)) {
+            Uri data = intent.getData();
+            String query = data.getPath().substring(1).replaceAll("-", "+");
+            Log.i(SearchResults.class.getSimpleName(), "Query: " + query);
+            onSearchRequested(query);
         }
     }
 

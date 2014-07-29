@@ -19,6 +19,10 @@ public class AlarmSetter {
     }
 
     public static void setAlarm(Context context, double time) {
+        if(time < 0) {
+            cancelAlarm(context);
+            return;
+        }
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(context, AlarmBroadcastReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
