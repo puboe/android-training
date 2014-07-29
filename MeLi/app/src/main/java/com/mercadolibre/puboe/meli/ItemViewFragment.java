@@ -2,7 +2,6 @@ package com.mercadolibre.puboe.meli;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +12,6 @@ import android.widget.TextView;
 import com.mercadolibre.puboe.meli.model.Item;
 import com.mercadolibre.puboe.meli.sqlite.ItemDAOImpl;
 import com.squareup.picasso.Picasso;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,44 +26,27 @@ public class ItemViewFragment extends Fragment {
     private Item itemObject;
     View mainView;
 
-    public static ItemViewFragment newInstance(Item item) {
+    public static ItemViewFragment newInstance() {
         ItemViewFragment fragment = new ItemViewFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(KEY_ITEM, item);
-        fragment.setArguments(args);
         return fragment;
     }
     public ItemViewFragment() {
         // Required empty public constructor
     }
 
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            this.itemObject = (Item)getArguments().getSerializable(KEY_ITEM);
-//        }
-//    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         if (savedInstanceState != null) {
-            itemObject = (Item) savedInstanceState.getSerializable(KEY_ITEM);
+            Item item = (Item) savedInstanceState.getSerializable(KEY_ITEM);
+            if(item != null)
+                itemObject = item;
         }
         View view = inflater.inflate(R.layout.fragment_item_view, container, false);
         mainView = view;
 
         return view;
     }
-
-//    @Override
-//    public void onViewCreated(View view, Bundle savedInstanceState) {
-//        super.onViewCreated(view, savedInstanceState);
-//        if(itemObject != null) {
-//            showItem(itemObject);
-//        }
-//    }
 
     @Override
     public void onStart() {
@@ -86,16 +65,21 @@ public class ItemViewFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(KEY_ITEM, itemObject);
+        if(itemObject != null)
+            outState.putSerializable(KEY_ITEM, itemObject);
     }
 
     public void showItem(final Item item) {
         itemObject = item;
         ImageView imageView = (ImageView)mainView.findViewById(R.id.item_image);
 
-        String url = item.getPictures().get(0).getUrl();
-        if(url != null && !url.isEmpty()) {
-            Picasso.with(getActivity()).load(url).into(imageView);
+        if(item.getPictures() != null && !item.getPictures().isEmpty()) {
+            String url = item.getPictures().get(0).getUrl();
+            if (url != null && !url.isEmpty()) {
+                Picasso.with(getActivity()).load(url).into(imageView);
+            } else {
+                imageView.setImageResource(R.drawable.imagequeued);
+            }
         } else {
             imageView.setImageResource(R.drawable.imagequeued);
         }
@@ -132,8 +116,6 @@ public class ItemViewFragment extends Fragment {
                 }
             }
         };
-
-
         track.setOnClickListener(l);
         untrack.setOnClickListener(l);
 
@@ -142,7 +124,6 @@ public class ItemViewFragment extends Fragment {
         } else {
             track.setVisibility(View.VISIBLE);
         }
-
     }
 
 

@@ -26,7 +26,6 @@ public class SearchResultsFragment extends ListFragment {
 
     public static final String KEY_DATA = "key_data";
 
-//    private Search searchObject;
     private SearchAdapter adapter;
     private ListView listView;
     private View mainView;
@@ -35,9 +34,6 @@ public class SearchResultsFragment extends ListFragment {
 
     public static SearchResultsFragment newInstance() {
         SearchResultsFragment fragment = new SearchResultsFragment();
-//        Bundle args = new Bundle();
-//        args.putSerializable(KEY_DATA, search);
-//        fragment.setArguments(args);
         return fragment;
     }
 
@@ -74,19 +70,12 @@ public class SearchResultsFragment extends ListFragment {
                 showResults(search);
             }
         }
-//        if(searchObject == null && savedInstanceState != null) {
-//            Search search = (Search) savedInstanceState.getSerializable(KEY_DATA);
-//            if(search != null)
-//                showResults(search);
-//        } else if (searchObject != null){
-//            showResults(searchObject);
-//        }
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        Log.i("SearchResultsFragment", "onAttach");
+        Log.i(SearchResultsFragment.class.getSimpleName(), "onAttach");
         try {
             mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
@@ -100,21 +89,20 @@ public class SearchResultsFragment extends ListFragment {
         super.onDetach();
         Log.i("SearchResultsFragment", "dettaching fragment");
         mListener = null;
+        listView = null;
+        adapter = null;
+        mainView = null;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Bundle args = getArguments();
-//        if (args != null) {
-//            showResults((Search)args.getSerializable(KEY_DATA));
-//        } else if (searchObject != null) {
-//            showResults(searchObject);
-//        }
+
         // When in two-pane layout, set the listview to highlight the selected list item
         // (We do this during onStart because at the point the listview is available.)
-        if (getFragmentManager().findFragmentById(R.id.list_fragment) != null) {
-            listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        if (getFragmentManager().findFragmentById(R.id.list_frame) != null) {
+            Log.i(SearchResultsFragment.class.getSimpleName(), "Setting CHOICE MODE");
+            getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         }
     }
 
@@ -122,13 +110,10 @@ public class SearchResultsFragment extends ListFragment {
     public void onSaveInstanceState(Bundle outState) {
         Log.i("SearchResultsFragment", "onSaveInstanceState");
         outState.putBoolean("not_first", true);
-//        outState.putSerializable(KEY_DATA, searchObject);
         super.onSaveInstanceState(outState);
     }
 
     public void showResults(Search results) {
-//        searchObject = results;
-
         if (adapter == null) {
             adapter = new SearchAdapter(getActivity(), results);
             setListAdapter(adapter);
@@ -165,18 +150,14 @@ public class SearchResultsFragment extends ListFragment {
         @Override
         public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
             if (mListener.getSearchObjectFromActivity() == null) {
-                Log.w("onScroll", "searchObject == null");
+                Log.w(SearchResultsFragment.class.getSimpleName(), "onScroll searchObject == null");
                 return;
             }
 
             if (firstVisibleItem + visibleItemCount == totalItemCount && totalItemCount > mListener.getSearchObjectFromActivity().getPaging().getOffset()) {
-                Log.w("onScroll", "firstVisible: " + firstVisibleItem + ", visibleCount:" + visibleItemCount + ", totalCount: " + totalItemCount);
+                Log.w(SearchResultsFragment.class.getSimpleName(), "onScroll firstVisible: " + firstVisibleItem + ", visibleCount:" + visibleItemCount + ", totalCount: " + totalItemCount);
                 mListener.onRequestMoreItems();
             }
         }
     }
-
-//        public Search getSearchObject() {
-//        return searchObject;
-//    }
 }

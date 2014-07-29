@@ -60,6 +60,7 @@ public class ItemTrackerService extends IntentService {
                     NotificationCompat.Builder mBuilder =
                             new NotificationCompat.Builder(this)
                                     .setSmallIcon(R.drawable.ic_launcher)
+                                    .setAutoCancel(true)
                                     .setContentTitle("Item: " + item.getId())
                                     .setContentText("Cambio su precio de $" + item.getPrice() + " a $" + requestedItem.getPrice());
 

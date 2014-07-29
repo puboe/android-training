@@ -1,7 +1,5 @@
 package com.mercadolibre.puboe.meli.model;
 
-import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,6 +10,7 @@ import java.util.List;
 /**
  * Created by puboe on 03/07/14.
  */
+
 public class Item implements Serializable {
 
     private String id;

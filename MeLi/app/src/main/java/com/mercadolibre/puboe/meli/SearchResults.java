@@ -2,14 +2,12 @@ package com.mercadolibre.puboe.meli;
 
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.mercadolibre.puboe.meli.asynctask.ItemAsyncTask;
 import com.mercadolibre.puboe.meli.asynctask.ItemCallbackInterface;
 import com.mercadolibre.puboe.meli.asynctask.SearchCallbackInterface;
 import com.mercadolibre.puboe.meli.model.Item;
@@ -23,16 +21,13 @@ public class SearchResults extends BaseActivity implements SearchCallbackInterfa
                                                         SearchResultsFragment.OnFragmentInteractionListener,
                                                         ItemCallbackInterface {
 
-    private static final String TAG_TASK_FRAGMENT = "task_fragment";
-    public static final String SEARCH_ASYNC_TASK_IN_PROGRESS = "search_async_task_in_progress";
-    public static final String ITEM_ASYNC_TASK_IN_PROGRESS = "item_async_task_in_progress";
-    public static final String SEARCH_ASYNC_TASK_QUERY = "search_async_task_query";
-    public static final String ITEM_ASYNC_TASK_QUERY = "search_async_task_query";
     public static final String ACTION_SHOW_VIP = "action_show_vip";
     public static final String KEY_DATA = "key_data";
+    public static final String KEY_ITEM = "key_item";
     public static final String KEY_VIP_ID = "key_vip_id";
     public static final Integer LIMIT = 15;
     private Search searchObject;
+    private Item itemObject;
     private String query;
 
     @Override
@@ -43,19 +38,35 @@ public class SearchResults extends BaseActivity implements SearchCallbackInterfa
         if(savedInstanceState != null) {
             Log.i(SearchResults.class.getSimpleName(), "on Create: Restoring SavedInstanceState");
             searchObject = (Search) savedInstanceState.getSerializable(KEY_DATA);
+            itemObject = (Item) savedInstanceState.getSerializable(KEY_ITEM);
         }
 
         setContentView(R.layout.activity_search_results);
 
         if (findViewById(R.id.fragment_container) != null) {
-            if (savedInstanceState != null) {
-                Log.i("SearchResults", "savedInstanceState != NULL");
-                return;
-            }
             SearchResultsFragment firstFragment = SearchResultsFragment.newInstance();
-
-            getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, firstFragment).commit();
+            if (savedInstanceState != null) {
+                Log.i("SearchResults", "savedInstanceState PORTRAIT != NULL");
+                getFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.fragment_container, firstFragment).commit();
+            } else {
+                getFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
+            }
+        } else if(findViewById(R.id.list_frame) != null) {
+            SearchResultsFragment searchResultsFragment = SearchResultsFragment.newInstance();
+            ItemViewFragment itemViewFragment = ItemViewFragment.newInstance();
+            if (savedInstanceState != null) {
+                Log.i("SearchResults", "savedInstanceState LAND != NULL");
+                getFragmentManager().beginTransaction().replace(R.id.list_frame, searchResultsFragment).commit();
+                getFragmentManager().beginTransaction().replace(R.id.vip_frame, itemViewFragment).commit();
+            } else {
+                getFragmentManager().beginTransaction().add(R.id.list_frame, searchResultsFragment).commit();
+                if(itemObject != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable(ItemViewFragment.KEY_ITEM, itemObject);
+                    itemViewFragment.setArguments(bundle);
+                }
+                getFragmentManager().beginTransaction().add(R.id.vip_frame, itemViewFragment).commit();
+            }
         } else {
             Log.i("SearchResults", "fragment_container == NULL");
         }
@@ -68,32 +79,12 @@ public class SearchResults extends BaseActivity implements SearchCallbackInterfa
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable(KEY_DATA, searchObject);
-//        if (searchAsyncTask != null && searchAsyncTask.getStatus() != AsyncTask.Status.FINISHED) {
-//            Log.i(SearchResults.class.getSimpleName(), "Saving SearchAsyncTask");
-//            String query = searchAsyncTask.getQuery();
-//            searchAsyncTask.cancel(true);
-//            if (query != null) {
-//                outState.putBoolean(SEARCH_ASYNC_TASK_IN_PROGRESS, true);
-//                outState.putString(SEARCH_ASYNC_TASK_QUERY, query);
-//            }
-//            searchAsyncTask = null;
-//        }
-//        if (itemAsyncTask != null && itemAsyncTask.getStatus() != AsyncTask.Status.FINISHED) {
-//            Log.i(SearchResults.class.getSimpleName(), "Saving ItemAsyncTask");
-//            String query = itemAsyncTask.getQuery();
-//            itemAsyncTask.cancel(true);
-//            if (query != null) {
-//                outState.putBoolean(ITEM_ASYNC_TASK_IN_PROGRESS, true);
-//                outState.putString(ITEM_ASYNC_TASK_QUERY, query);
-//            }
-//            itemAsyncTask = null;
-//        }
+        outState.putSerializable(KEY_ITEM, itemObject);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle state) {
         Log.i(SearchResults.class.getSimpleName(), "onRestoreInstanceState");
-//        searchObject = (Search) state.getSerializable(KEY_DATA);
         super.onRestoreInstanceState(state);
     }
 
@@ -153,7 +144,7 @@ public class SearchResults extends BaseActivity implements SearchCallbackInterfa
         } else {
             Log.i(SearchResults.class.getSimpleName(), "TWO-PANE searchResultsFragment != null");
             SearchResultsFragment searchResultsFragment = (SearchResultsFragment)
-                    getFragmentManager().findFragmentById(R.id.list_fragment);
+                    getFragmentManager().findFragmentById(R.id.list_frame);
             searchResultsFragment.showResults(searchObject);
         }
     }
@@ -185,10 +176,14 @@ public class SearchResults extends BaseActivity implements SearchCallbackInterfa
 
     @Override
     public void onItemRequestSuccess(Item response) {
+        itemObject = response;
 
         if (findViewById(R.id.fragment_container) != null) {
-            Log.i(SearchResults.class.getSimpleName(), "SINGLE-PANE itemViewFragment == null");
-            ItemViewFragment newFragment = ItemViewFragment.newInstance(response);
+            Log.i(SearchResults.class.getSimpleName(), "SINGLE-PANE");
+            ItemViewFragment newFragment = ItemViewFragment.newInstance();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(ItemViewFragment.KEY_ITEM, itemObject);
+            newFragment.setArguments(bundle);
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
             transaction.addToBackStack(null);
@@ -197,9 +192,9 @@ public class SearchResults extends BaseActivity implements SearchCallbackInterfa
 
             transaction.commit();
         } else {
-            Log.i(SearchResults.class.getSimpleName(), "TWO-PANE itemViewFragment != null");
-            ItemViewFragment itemViewFragment = (ItemViewFragment) getFragmentManager().findFragmentById(R.id.vip_fragment);
-            itemViewFragment.showItem(response);
+            Log.i(SearchResults.class.getSimpleName(), "TWO-PANE");
+            ItemViewFragment itemViewFragment = (ItemViewFragment) getFragmentManager().findFragmentById(R.id.vip_frame);
+            itemViewFragment.showItem(itemObject);
         }
     }
 
