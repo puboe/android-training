@@ -8,6 +8,7 @@
     android:layout_width="80dp"
     android:layout_height="80dp"
     android:contentDescription="@string/image"
+    android:paddingTop="0dp"
     android:paddingLeft="10dp"
     android:paddingRight="10dp" />
 
@@ -16,9 +17,10 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_toRightOf="@+id/row_thumbnail"
-    android:paddingBottom="10dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="1dp"
     android:textColor="#ff000000"
-    android:textSize="16dp" />
+    android:textSize="14dp" />
 
 <TextView
     android:id="@+id/row_subtitle"
@@ -26,9 +28,9 @@
     android:layout_height="wrap_content"
     android:layout_toRightOf="@+id/row_thumbnail"
     android:layout_below="@+id/row_title"
-    android:paddingBottom="10dp"
+    android:paddingBottom="1dp"
     android:textColor="#ff000000"
-    android:textSize="16dp" />
+    android:textSize="13dp" />
 
 <TextView
     android:id="@+id/row_available"
@@ -36,9 +38,9 @@
     android:layout_height="wrap_content"
     android:layout_toRightOf="@+id/row_thumbnail"
     android:layout_below="@+id/row_subtitle"
-    android:paddingBottom="10dp"
+    android:paddingBottom="1dp"
     android:textColor="#ff000000"
-    android:textSize="16dp" />
+    android:textSize="13dp" />
 
 <TextView
     android:id="@+id/row_price"
@@ -47,7 +49,8 @@
     android:layout_below="@+id/row_available"
     android:layout_toRightOf="@+id/row_thumbnail"
     android:paddingLeft="10dp"
+    android:paddingBottom="10dp"
     android:textColor="#ff40adff"
-    android:textSize="14dp" />
+    android:textSize="13dp" />
 
 </RelativeLayout>

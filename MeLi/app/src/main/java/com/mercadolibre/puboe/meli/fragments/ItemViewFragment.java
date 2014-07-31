@@ -1,4 +1,4 @@
-package com.mercadolibre.puboe.meli;
+package com.mercadolibre.puboe.meli.fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.mercadolibre.puboe.meli.tracker.ItemDAO;
+import com.mercadolibre.puboe.meli.R;
 import com.mercadolibre.puboe.meli.model.Item;
 import com.mercadolibre.puboe.meli.sqlite.ItemDAOImpl;
 import com.squareup.picasso.Picasso;
@@ -124,6 +126,7 @@ public class ItemViewFragment extends Fragment {
         } else {
             track.setVisibility(View.VISIBLE);
         }
+//        getActivity().setTitle(item.getTitle());
     }
 
 

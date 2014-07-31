@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.mercadolibre.puboe.meli.model.Item;
-import com.mercadolibre.puboe.meli.ItemDAO;
+import com.mercadolibre.puboe.meli.tracker.ItemDAO;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,13 +1,13 @@
-package com.mercadolibre.puboe.meli;
+package com.mercadolibre.puboe.meli.activities;
 
-import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.mercadolibre.puboe.meli.fragments.ItemViewFragment;
+import com.mercadolibre.puboe.meli.R;
 import com.mercadolibre.puboe.meli.model.Item;
 import com.mercadolibre.puboe.meli.robospice.ItemRetrofitRequest;
 import com.octo.android.robospice.persistence.exception.SpiceException;

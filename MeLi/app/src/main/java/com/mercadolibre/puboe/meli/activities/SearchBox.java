@@ -1,4 +1,4 @@
-package com.mercadolibre.puboe.meli;
+package com.mercadolibre.puboe.meli.activities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,6 +15,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.mercadolibre.puboe.meli.R;
 
 public class SearchBox extends Activity {
 
@@ -32,6 +35,19 @@ public class SearchBox extends Activity {
 
         Log.w("EditTextContent", editText.getText().toString());
         b = (Button) findViewById(R.id.search_button);
+
+        editText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction()!=KeyEvent.ACTION_DOWN)
+                    return false;
+                if(keyCode == KeyEvent.KEYCODE_ENTER ){
+                    startSearchActivity(editText.getText().toString().replaceAll(" ", "+"));
+                    return true;
+                }
+                return false;
+            }
+        });
 
         OnClickListener l = new OnClickListener() {
             @Override

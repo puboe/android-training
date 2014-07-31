@@ -1,14 +1,15 @@
-package com.mercadolibre.puboe.meli;
+package com.mercadolibre.puboe.meli.activities;
 
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.mercadolibre.puboe.meli.fragments.ItemViewFragment;
+import com.mercadolibre.puboe.meli.R;
+import com.mercadolibre.puboe.meli.fragments.SearchResultsFragment;
 import com.mercadolibre.puboe.meli.asynctask.ItemCallbackInterface;
 import com.mercadolibre.puboe.meli.asynctask.SearchCallbackInterface;
 import com.mercadolibre.puboe.meli.model.Item;
@@ -19,7 +20,7 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 public class SearchResults extends BaseActivity implements SearchCallbackInterface,
-                                                        SearchResultsFragment.OnFragmentInteractionListener,
+        SearchResultsFragment.OnFragmentInteractionListener,
                                                         ItemCallbackInterface {
 
     public static final String ACTION_SHOW_VIP = "action_show_vip";

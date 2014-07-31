@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.preference.PreferenceManager;
 
-import com.mercadolibre.puboe.meli.SettingsActivity;
+import com.mercadolibre.puboe.meli.activities.SettingsActivity;
 
 /**
  * Created by puboe on 22/07/14.

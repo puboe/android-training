@@ -3,15 +3,15 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.mercadolibre.puboe.meli.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="com.mercadolibre.puboe.meli.activities.SettingsActivity$GeneralPreferenceFragment"
         android:title="@string/pref_header_general" />
 
     <header
-        android:fragment="com.mercadolibre.puboe.meli.SettingsActivity$NotificationPreferenceFragment"
+        android:fragment="com.mercadolibre.puboe.meli.activities.SettingsActivity$NotificationPreferenceFragment"
         android:title="@string/pref_header_notifications" />
 
     <header
-        android:fragment="com.mercadolibre.puboe.meli.SettingsActivity$DataSyncPreferenceFragment"
+        android:fragment="com.mercadolibre.puboe.meli.activities.SettingsActivity$DataSyncPreferenceFragment"
         android:title="@string/pref_header_data_sync" />
 
 </preference-headers>

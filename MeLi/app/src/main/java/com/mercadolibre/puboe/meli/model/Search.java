@@ -14,6 +14,7 @@ import java.util.List;
  */
 public class Search implements Serializable {
 
+    private String query;
     private Paging paging;
     private LinkedHashSet<Item> results;
 
@@ -36,6 +37,10 @@ public class Search implements Serializable {
 
     public void setResults(LinkedHashSet<Item> results) {
         this.results = results;
+    }
+
+    public String getQuery() {
+        return query;
     }
 
     public static Search parseSearchObject(JSONObject search) throws JSONException {

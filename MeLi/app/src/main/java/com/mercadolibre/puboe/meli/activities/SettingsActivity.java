@@ -1,4 +1,4 @@
-package com.mercadolibre.puboe.meli;
+package com.mercadolibre.puboe.meli.activities;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -12,6 +12,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.mercadolibre.puboe.meli.R;
 import com.mercadolibre.puboe.meli.tracker.AlarmSetter;
 
 import java.util.List;

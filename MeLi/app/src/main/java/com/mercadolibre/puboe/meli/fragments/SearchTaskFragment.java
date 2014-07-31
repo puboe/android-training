@@ -1,4 +1,4 @@
-package com.mercadolibre.puboe.meli;
+package com.mercadolibre.puboe.meli.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;

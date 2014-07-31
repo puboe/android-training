@@ -1,4 +1,4 @@
-package com.mercadolibre.puboe.meli;
+package com.mercadolibre.puboe.meli.fragments;
 
 import android.app.Activity;
 import android.app.ListFragment;
@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
+import com.mercadolibre.puboe.meli.R;
+import com.mercadolibre.puboe.meli.SearchAdapter;
 import com.mercadolibre.puboe.meli.model.Item;
 import com.mercadolibre.puboe.meli.model.Search;
 
@@ -122,6 +124,7 @@ public class SearchResultsFragment extends ListFragment {
         } else {
             setListAdapter(adapter);
         }
+        getActivity().setTitle(results.getQuery().replace("+", " "));
     }
 
     @Override
