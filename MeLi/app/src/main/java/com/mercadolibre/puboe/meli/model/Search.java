@@ -5,9 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 
 /**
  * Created by puboe on 04/07/14.

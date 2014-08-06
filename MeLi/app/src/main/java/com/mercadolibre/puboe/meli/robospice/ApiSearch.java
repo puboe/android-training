@@ -3,7 +3,6 @@ package com.mercadolibre.puboe.meli.robospice;
 import com.mercadolibre.puboe.meli.model.Search;
 
 import retrofit.http.GET;
-import retrofit.http.Path;
 import retrofit.http.Query;
 
 /**

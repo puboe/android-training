@@ -81,7 +81,7 @@ public class ItemDAOImpl implements ItemDAO {
 //        values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_IMAGEURL, item.getImageUrl());
         values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_CONDITION, item.getCondition());
         values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_AVAILABLE, item.getAvailableQuantity());
-        long insertId = database.insert(ItemDatabaseContract.ItemEntry.TABLE_NAME, null,
+        database.insert(ItemDatabaseContract.ItemEntry.TABLE_NAME, null,
                 values);
         System.out.println("Item added with id: " + item.getId());
         close();
@@ -100,7 +100,7 @@ public class ItemDAOImpl implements ItemDAO {
 //        values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_IMAGEURL, item.getImageUrl());
         values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_CONDITION, item.getCondition());
         values.put(ItemDatabaseContract.ItemEntry.COLUMN_NAME_AVAILABLE, item.getAvailableQuantity());
-        long updateId = database.update(ItemDatabaseContract.ItemEntry.TABLE_NAME, values,
+        database.update(ItemDatabaseContract.ItemEntry.TABLE_NAME, values,
                                         ItemDatabaseContract.ItemEntry.COLUMN_NAME_ITEM_ID + " = '" + item.getId() + "'", null);
         System.out.println("Item updated with id: " + item.getId());
         close();

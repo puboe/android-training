@@ -51,7 +51,7 @@ public class SearchAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        ViewHolder holder = null;
+        ViewHolder holder;
 
         LayoutInflater mInflater = (LayoutInflater)
                 context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);

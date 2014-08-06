@@ -95,7 +95,7 @@ public class ItemViewFragment extends Fragment {
         TextView available = (TextView)mainView.findViewById(R.id.item_available_quantity);
         available.setText(item.getAvailableQuantity() + " diponibles");
 
-        final ItemDAO itemDao = ItemDAOImpl.getInstance(getActivity());
+        final ItemDAO itemDao = ItemDAOImpl.getInstance(getActivity().getApplicationContext());
 
         final Button track = (Button) mainView.findViewById(R.id.track_button);
         final Button untrack = (Button) mainView.findViewById(R.id.untrack_button);

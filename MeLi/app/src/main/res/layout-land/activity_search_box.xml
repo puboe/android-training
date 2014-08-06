@@ -29,7 +29,7 @@
             android:id="@+id/search_query"
             android:inputType="text"
             android:layout_marginTop="28dp"
-            android:hint="Ingrese su busqueda!"
+            android:hint="@string/insert_search"
             android:layout_below="@+id/textView"
             android:layout_centerHorizontal="true"
             android:imeOptions="actionSearch"/>
@@ -37,7 +37,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Search"
+            android:text="@string/search_button_label"
             android:id="@+id/search_button"
             android:layout_marginTop="28dp"
             android:layout_below="@+id/search_query"

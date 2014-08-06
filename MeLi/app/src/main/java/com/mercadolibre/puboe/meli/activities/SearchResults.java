@@ -20,8 +20,7 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 
 public class SearchResults extends BaseActivity implements SearchCallbackInterface,
-        SearchResultsFragment.OnFragmentInteractionListener,
-                                                        ItemCallbackInterface {
+        SearchResultsFragment.OnFragmentInteractionListener, ItemCallbackInterface {
 
     public static final String ACTION_SHOW_VIP = "action_show_vip";
     public static final String KEY_DATA = "key_data";

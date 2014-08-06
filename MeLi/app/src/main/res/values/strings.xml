@@ -3,14 +3,14 @@
 
     <string name="app_name">MeLi</string>
     <string name="search_label">Haga su búsqueda!</string>
+    <string name="search_button_label">Busca</string>
     <string name="action_settings">Settings</string>
-    <string name="search_hint">Haga su búsqueda!</string>
     <string name="title_activity_search_results">Resultados de Búsqueda</string>
-    <string name="hello_world">Hello world!</string>
     <string name="image">Image</string>
     <string name="title_activity_item_view">Item</string>
     <string name="track_item">Track item</string>
     <string name="untrack_item">Untrack item</string>
     <string name="title_activity_deep_linking">ML Item View</string>
+    <string name="insert_search">Ingrese su búsqueda!</string>
 
 </resources>

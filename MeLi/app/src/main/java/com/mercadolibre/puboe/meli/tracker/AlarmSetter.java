@@ -30,7 +30,7 @@ public class AlarmSetter {
         am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),(long) (1000 * 60 * time), pi); //Millisec * Second * Minute
     }
 
-    public static void cancelAlarm(Context context) {
+    private static void cancelAlarm(Context context) {
         Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
         PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

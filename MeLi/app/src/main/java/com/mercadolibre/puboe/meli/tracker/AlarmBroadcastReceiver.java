@@ -3,9 +3,6 @@ package com.mercadolibre.puboe.meli.tracker;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-
-import com.mercadolibre.puboe.meli.tracker.ItemTrackerService;
 
 /**
  * Created by puboe on 22/07/14.

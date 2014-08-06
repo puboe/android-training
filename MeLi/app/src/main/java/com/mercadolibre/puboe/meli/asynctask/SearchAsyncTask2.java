@@ -12,8 +12,8 @@ import org.json.JSONObject;
  */
 public class SearchAsyncTask2 extends CustomAsyncTask {
 
-    private final String searchBaseUrl = "https://api.mercadolibre.com/sites/MLA/search?q=";
-    private final String searchParameters = "&limit=15";
+    private final static String searchBaseUrl = "https://api.mercadolibre.com/sites/MLA/search?q=";
+    private final static String searchParameters = "&limit=15";
     private SearchCallbackInterface callbackInterface;
 
     public SearchAsyncTask2(SearchCallbackInterface callbackInterface) {

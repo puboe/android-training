@@ -12,7 +12,7 @@ import org.json.JSONObject;
  */
 public class ItemAsyncTask extends CustomAsyncTask {
 
-    private final String itemsBaseUrl = "https://api.mercadolibre.com/items/";
+    private static final String itemsBaseUrl = "https://api.mercadolibre.com/items/";
     private ItemCallbackInterface itemCallbackInterface;
 
     public ItemAsyncTask(ItemCallbackInterface itemCallbackInterface) {

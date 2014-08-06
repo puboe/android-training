@@ -60,6 +60,8 @@ public class SearchBox extends Activity {
 
     public void startSearchActivity(String query) {
         Log.w("startSearchQuery", query);
+        if(query == null || query.equals(""))
+            return;
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();

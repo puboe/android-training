@@ -119,7 +119,7 @@ public class SearchResultsFragment extends ListFragment {
         if (adapter == null) {
             adapter = new SearchAdapter(getActivity(), results);
             setListAdapter(adapter);
-        } else if(adapter != null && getListAdapter() != null){
+        } else if(getListAdapter() != null){
             adapter.notifyDataSetChanged();
         } else {
             setListAdapter(adapter);

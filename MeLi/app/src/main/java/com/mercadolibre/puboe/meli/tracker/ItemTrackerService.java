@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class ItemTrackerService extends IntentService {
 
-    private final String itemsBaseUrl = "https://api.mercadolibre.com/items/";
+    private static final String itemsBaseUrl = "https://api.mercadolibre.com/items/";
 
     public ItemTrackerService() {
         super("ItemTrackerService");
@@ -47,7 +47,7 @@ public class ItemTrackerService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        ItemDAO itemDAO = ItemDAOImpl.getInstance(this);
+        ItemDAO itemDAO = ItemDAOImpl.getInstance(this.getApplicationContext());
         List<Item> items = itemDAO.getAllItems();
         int mId = 0;
         for(Item item: items) {
