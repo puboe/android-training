@@ -116,6 +116,12 @@ public class SearchResultsFragment extends ListFragment {
     }
 
     public void showResults(Search results) {
+        if(results == null) {
+            Log.i("SearchResultsFragment: ", "showResults: results null");
+        } else if(results.getResults() == null) {
+            Log.i("SearchResultsFragment: ", "showResults: getResults null");
+        }
+
         if (adapter == null) {
             adapter = new SearchAdapter(getActivity(), results);
             setListAdapter(adapter);
