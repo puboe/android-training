@@ -1,4 +1,4 @@
-android-training
+Android training
 ================
 
-Android Jedi Training
+A simple app I made when I was learning Android.
